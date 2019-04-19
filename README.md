@@ -57,19 +57,12 @@ chmod 755 *
 ./build.sh clean
 ```
 
-# 启动Example或战斗服
+# 启动服务器
 ```
-# 网络库服务器使用范例
-./battlesvr.sh start TCPServerExample
-
-# 网络库客户端使用范例
-./battlesvr.sh start TCPClientExample
-
-# 战斗服
 ./battlesvr.sh start BattleServer
 ```
 
-# 关闭Example或战斗服
+# 关闭服务器
 ```
 ./battlesvr.sh stop
 ```
@@ -83,4 +76,14 @@ chmod 755 *
 # 关闭客户端
 ```
 ./test stop battle-client
+```
+
+# 开启网络库Example
+进入battle-server\battle-server\bin\Debug\目录，执行如下命令
+```
+# 开启网络库服务端使用Example
+mono battle-server.exe TCPServerExample
+
+# 开启网络库客户端使用Example
+mono battle-server.exe TCPClientExample
 ```

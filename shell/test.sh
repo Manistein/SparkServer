@@ -12,8 +12,8 @@ parentPath=$(dirname $(pwd))
 function start_process() {
 	ps -o command -C skynet | grep "$parentPath/skynet/skynet $parentPath/test/$1/conf$2" &> /dev/null
 	[ $? -eq 0 ] && echo "进程$1已经存在,禁止重复启动" && return
-	echo "$parentPath/skynet/skynet $parentPath/game/test/$1/conf$2 &> /dev/null &"
-	nohup $parentPath/skynet/skynet $parentPath/game/test/$1/conf$2 &> /dev/null &
+	echo "$parentPath/skynet/skynet $parentPath/test/$1/conf$2 &> /dev/null &"
+	nohup $parentPath/skynet/skynet $parentPath/test/$1/conf$2 &> /dev/null &
 }
 
 function launch_all() {

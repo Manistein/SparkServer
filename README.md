@@ -5,6 +5,9 @@
 * 消息调度机制，可以自定义服务处理逻辑（对skynet节点的request进行解码，并将response编码后返回给skynet节点）
 * 日志服务
 
+# 架构文档
+[C#服务端框架设计与实现](https://manistein.github.io/blog/post/server/csharp/csharp%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/)
+
 # 测试通过的环境
 * Ubuntu18.04
 * Win7

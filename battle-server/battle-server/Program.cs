@@ -14,42 +14,56 @@ namespace BattleServer
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Please select app type \n1 Server \n2 Client \n3 BattleServer \n4 LoggerTestUtil");
-            string inputStr = Console.ReadLine();
+            string inputMode = args[0];
             int mode = 0;
-            if (Int32.TryParse(inputStr, out mode))
+            if (inputMode == "TCPServerExample")
             {
-                switch(mode)
-                {
-                    case 1:
-                        {
-                            TCPServerExample tcpServerExample = new TCPServerExample();
-                            tcpServerExample.Run();
-                        }break;
-                    case 2:
-                        {
-                            TCPClientExample tcpClientExample = new TCPClientExample();
-                            tcpClientExample.Run();
-                        }break;
-                    case 3:
-                        {
-                            Server battleServer = new Server();
-                            battleServer.Run();
-                        }break;
-                    case 4:
-                        {
-                            LoggerTestUtil loggerUtil = new LoggerTestUtil();
-                            loggerUtil.Run();
-                        } break;
-                    default:
-                        {
-                            Console.WriteLine("Mode:{0} not supported", mode);
-                        }break;
-                }
+                mode = 1;
+            }
+            else if (inputMode == "TCPClientExample")
+            {
+                mode = 2;
+            }
+            else if (inputMode == "BattleServer")
+            {
+                mode = 3;
+            }
+            else if (inputMode == "LoggerTest")
+            {
+                mode = 4;
             }
             else
             {
-                Console.WriteLine("Unknow input mode {0}", inputStr);
+                Console.WriteLine("Unknow input mode {0}", inputMode);
+                return;
+            }
+
+            switch(mode)
+            {
+                case 1:
+                    {
+                        TCPServerExample tcpServerExample = new TCPServerExample();
+                        tcpServerExample.Run();
+                    }break;
+                case 2:
+                    {
+                        TCPClientExample tcpClientExample = new TCPClientExample();
+                        tcpClientExample.Run();
+                    }break;
+                case 3:
+                    {
+                        Server battleServer = new Server();
+                        battleServer.Run();
+                    }break;
+                case 4:
+                    {
+                        LoggerTestUtil loggerUtil = new LoggerTestUtil();
+                        loggerUtil.Run();
+                    } break;
+                default:
+                    {
+                        Console.WriteLine("Mode:{0} not supported", mode);
+                    }break;
             }
         }
     }

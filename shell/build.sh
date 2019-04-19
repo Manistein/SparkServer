@@ -40,6 +40,9 @@ function build() {
 	echo "start build battle-server"
 	cd $parentPath/battle-server
 	MONO_IOMAP=case msbuild battle-server.sln
+
+	cd $parentPath/battle-server/battle-server/bin/Debug
+	chmod 755 *
 }
 
 function clean() {

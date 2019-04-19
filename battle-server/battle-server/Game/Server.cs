@@ -31,7 +31,7 @@ namespace BattleServer.Game
         public void Run()
         {
             m_tcpServer = new TCPServer();
-            m_tcpServer.Start("192.168.210.104", 8888, 30, OnSessionError, OnReadPacketComplete, OnAcceptComplete);
+            m_tcpServer.Start("127.0.0.1", 8888, 30, OnSessionError, OnReadPacketComplete, OnAcceptComplete);
 
             // create global instance first
             m_globalMQ = GlobalMQ.GetInstance();

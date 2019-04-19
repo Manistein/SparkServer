@@ -9,14 +9,14 @@
 parentPath=$(dirname $(pwd))
 
 function start_process() {
-	ps -o command -C mono | grep "$parentPath/battle-server/bin/Debug/battle-server.exe" &> /dev/null
+	ps -o command -C mono | grep "$parentPath/battle-server/battle-server/bin/Debug/battle-server.exe $1" &> /dev/null
 	[ $? -eq 0 ] && echo "进程已经存在,禁止重复启动" && return
-	echo "mono  $parentPath/battle-server/bin/Debug/battle-server.exe &> /dev/null &"
-	nohup mono $parentPath/battle-server/bin/Debug/battle-server.exe &> /dev/null &
+	echo "mono  $parentPath/battle-server/battle-server/bin/Debug/battle-server.exe $1 &> /dev/null &"
+	nohup mono $parentPath/battle-server/battle-server/bin/Debug/battle-server.exe $1 &> /dev/null &
 }
 
 function launch_all() {
-	start_process 
+	start_process $1
 }
 
 function stop_process() {
@@ -30,12 +30,12 @@ function stop_all() {
 }
 
 if [[ "$1" == "start" ]]; then
-	launch_all
+	launch_all $2
 elif [[ "$1" == "stop" ]]; then
 	stop_all battle-server.exe 
 elif [[ "$1" == "restart" ]]; then
 	stop_all battle-server.exe 
-	launch_all
+	launch_all $2
 else
 	echo "不存在$1指令"
 fi

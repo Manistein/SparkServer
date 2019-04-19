@@ -8,19 +8,27 @@
 
 parentPath=$(dirname $(pwd))
 
+function try_create_folder() {
+	if [ ! -d $parentPath/$1 ]; then 
+		mkdir -p $parentPath/$1
+	fi
+}
+
 function build() {
 	# 编译skynet
 	echo "====================="
 	echo "start build skyent..."
 	cd $parentPath/skynet
 	make linux
-
+	
+	try_create_folder 3rd/clib/loggerx
 	# 编译log日志服务
 	echo "====================="
 	echo "start build service log..."
 	cd $parentPath/3rd/src/service-log
 	make
 
+	try_create_folder 3rd/clib/cryptex
 	# 编译cryptex
 	echo "====================="
 	echo "start build cryptex..."
@@ -30,7 +38,7 @@ function build() {
 	# 编译battle-server
 	echo "====================="
 	echo "start build battle-server"
-	cd $parentPath/game/battle-server
+	cd $parentPath/battle-server
 	MONO_IOMAP=case msbuild battle-server.sln
 }
 
@@ -56,7 +64,7 @@ function clean() {
 	# 清理battle-server
 	echo "====================="
 	echo "start clean battle-server"
-	cd $parentPath/game/battle-server/battle-server/bin
+	cd $parentPath/battle-server/battle-server/bin
 	rm -rf * 
 }
 

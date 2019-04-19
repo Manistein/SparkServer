@@ -1,0 +1,26 @@
+lmode = "localsvr"
+
+root = "./"
+hroot = "./../"
+lroot = root.."../battle-server"
+thread = 2
+logpath = "."
+harbor = 0
+start = "main"
+bootstrap = "snlua bootstrap"
+lualoader = root.."../skynet/lualib/loader.lua"
+
+cpath = root.."../skynet/cservice/?.so;"
+        ..lroot.."/../3rd/clib/loggerx/?.so;"
+luaservice = root.."../skynet/service/?.lua;"
+            ..lroot.."/test/battle-client/?.lua;"
+lua_cpath = root.."../skynet/luaclib/?.so;"
+lua_path = root.."../skynet/lualib/?.lua;../skynet/lualib/compat10/?.lua;../skynet/lualib/?/init.lua;"
+            ..lroot.."/?.lua;"
+            ..root.."../3rd/lualib/?.lua;"
+            ..lroot.."/test/battle-client/?.lua;"
+
+logger = "../logs/battle-client" 
+logservice = "loggerx"
+
+cluster = root.."../test/battle-client/clustername.lua"

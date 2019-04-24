@@ -24,7 +24,7 @@ sudo apt-get install dos2unix
 # 获取仓库
 ```
 # clone to ubuntu
-sudo git clone git@github.com:Manistein/CSharpServerFramework.git
+sudo git clone git@github.com:Manistein/SparkServer.git
 ```
 
 # Linux Shell
@@ -59,12 +59,12 @@ chmod 755 *
 
 # 启动服务器
 ```
-./battlesvr.sh start BattleServer
+./sparkserver.sh start BattleServer
 ```
 
 # 关闭服务器
 ```
-./battlesvr.sh stop
+./sparkserver.sh stop
 ```
 
 # 启动客户端

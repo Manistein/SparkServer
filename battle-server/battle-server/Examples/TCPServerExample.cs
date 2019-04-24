@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BattleServer.Network;
+using SparkServer.Network;
 
-namespace BattleServer.Examples
+namespace SparkServer.Examples
 {
     class UserData
     {

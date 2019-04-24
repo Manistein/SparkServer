@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 
-using BattleServer.Game.Service;
-using BattleServer.Game.Service.Logger;
+using SparkServer.Game.Service;
+using SparkServer.Game.Service.Logger;
 
 
-namespace BattleServer.TestUtil
+namespace SparkServer.TestUtil
 {
     class LoggerTestUtil
     {

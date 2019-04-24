@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-namespace BattleServer.Network
+namespace SparkServer.Network
 {
     public class InboundPacketManager
     {

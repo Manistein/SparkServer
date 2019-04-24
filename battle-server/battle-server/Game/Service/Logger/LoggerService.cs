@@ -7,7 +7,7 @@ using NLog;
 using NLog.Config;
 using NLog.Targets;
 
-namespace BattleServer.Game.Service.Logger
+namespace SparkServer.Game.Service.Logger
 {
     class LoggerService : ServiceBase
     {

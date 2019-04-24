@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.438
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "battle-server", "battle-server\battle-server.csproj", "{F44769E6-B8AB-4E31-A97F-1EA17A4549CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparkServer", "battle-server\SparkServer.csproj", "{F44769E6-B8AB-4E31-A97F-1EA17A4549CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,7 +10,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BattleServer.Network
+namespace SparkServer.Network
 {
     public class TCPSynchronizeContext : SynchronizationContext
     {

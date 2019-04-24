@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using BattleServer.Game.MessageQueue;
+using SparkServer.Game.MessageQueue;
 
-namespace BattleServer.Game.Service
+namespace SparkServer.Game.Service
 {
     enum MessageType
     {

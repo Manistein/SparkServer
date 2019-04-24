@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BattleServer.Game.Utility;
+using SparkServer.Game.Utility;
 using System.Diagnostics;
-using BattleServer.Game.Service;
+using SparkServer.Game.Service;
 
-namespace BattleServer.Game.MessageQueue
+namespace SparkServer.Game.MessageQueue
 {
     /* ----------------------------------------------------------------------------------------------------------------------
      * Skynet cluster request packet formats

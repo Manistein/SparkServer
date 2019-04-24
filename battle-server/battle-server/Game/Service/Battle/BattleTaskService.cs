@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BattleServer.Game.Service.Logger;
-using BattleServer.Game.Utility;
+using SparkServer.Game.Service.Logger;
+using SparkServer.Game.Utility;
 
-namespace BattleServer.Game.Service.Battle
+namespace SparkServer.Game.Service.Battle
 {
     class BattleTaskService : ServiceBase
     {

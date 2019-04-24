@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace BattleServer.Game.MessageQueue
+namespace SparkServer.Game.MessageQueue
 {
     class GlobalMQ
     {

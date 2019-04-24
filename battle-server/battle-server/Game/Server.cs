@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BattleServer.Network;
-using BattleServer.Game.MessageQueue;
-using BattleServer.Game.Service;
-using BattleServer.Game.Service.Logger;
-using BattleServer.Game.Service.Battle;
-using BattleServer.Game.Utility;
+using SparkServer.Network;
+using SparkServer.Game.MessageQueue;
+using SparkServer.Game.Service;
+using SparkServer.Game.Service.Logger;
+using SparkServer.Game.Service.Battle;
+using SparkServer.Game.Utility;
 
-namespace BattleServer.Game
+namespace SparkServer.Game
 {
     class Server
     {

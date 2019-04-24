@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BattleServer.Game.Utility
+namespace SparkServer.Game.Utility
 {
     class ConfigHelper
     {

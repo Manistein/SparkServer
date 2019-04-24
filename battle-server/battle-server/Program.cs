@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BattleServer.Network;
-using BattleServer.Examples;
-using BattleServer.Game;
-using BattleServer.TestUtil;
+using SparkServer.Network;
+using SparkServer.Examples;
+using SparkServer.Game;
+using SparkServer.TestUtil;
 
-namespace BattleServer
+namespace SparkServer
 {
     class Program
     {

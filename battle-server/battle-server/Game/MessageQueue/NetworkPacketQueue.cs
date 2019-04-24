@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace BattleServer.Game.MessageQueue
+namespace SparkServer.Game.MessageQueue
 {
     class NetworkPacket
     {

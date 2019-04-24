@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BattleServer.Game.Service
+namespace SparkServer.Game.Service
 {
     class ServiceSlots
     {

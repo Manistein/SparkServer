@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BattleServer.Game.Service;
-using BattleServer.Game.MessageQueue;
+using SparkServer.Game.Service;
+using SparkServer.Game.MessageQueue;
 
-namespace BattleServer.Game.Utility
+namespace SparkServer.Game.Utility
 {
     class RPCHelper
     {

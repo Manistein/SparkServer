@@ -24,7 +24,7 @@ sudo apt-get install dos2unix
 # 获取仓库
 ```
 # clone to ubuntu
-sudo git clone git@github.com:Manistein/SparkServer.git
+sudo git clone https://github.com/Manistein/SparkServer.git
 ```
 
 # Linux Shell

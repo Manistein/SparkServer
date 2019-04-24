@@ -2,14 +2,14 @@
 
 # /***
 # * 编译、清理脚本
-# * @author manistein 
+# * @author manistein
 # * @since 2019-04-19
 # */
 
 parentPath=$(dirname $(pwd))
 
 function try_create_folder() {
-	if [ ! -d $parentPath/$1 ]; then 
+	if [ ! -d $parentPath/$1 ]; then
 		mkdir -p $parentPath/$1
 	fi
 }
@@ -20,7 +20,7 @@ function build() {
 	echo "start build skyent..."
 	cd $parentPath/skynet
 	make linux
-	
+
 	try_create_folder 3rd/clib/loggerx
 	# 编译log日志服务
 	echo "====================="
@@ -35,13 +35,13 @@ function build() {
 	cd $parentPath/3rd/src/cryptex
 	make
 
-	# 编译battle-server
+	# 编译spark-server
 	echo "====================="
-	echo "start build battle-server"
-	cd $parentPath/battle-server
-	MONO_IOMAP=case msbuild battle-server.sln
+	echo "start build spark-server"
+	cd $parentPath/spark-server
+	MONO_IOMAP=case msbuild SparkServer.sln
 
-	cd $parentPath/battle-server/battle-server/bin/Debug
+	cd $parentPath/spark-server/server/bin/Debug
 	chmod 755 *
 }
 
@@ -64,11 +64,11 @@ function clean() {
 	cd $parentPath/3rd/src/cryptex
 	make clean
 
-	# 清理battle-server
+	# 清理spark-server
 	echo "====================="
-	echo "start clean battle-server"
-	cd $parentPath/battle-server/battle-server/bin
-	rm -rf * 
+	echo "start clean spark-server"
+	cd $parentPath/spark-server/server/bin
+	rm -rf *
 }
 
 if [[ "$1" == "all" ]]; then

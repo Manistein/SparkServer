@@ -1,2 +1,5 @@
 /battle-server/battle-server/obj
 /sftp-config.json
+/spark-server/server/Tools/w32lualib/Bin/Debug
+/spark-server/server/Tools/w32lualib/Bin/Release
+/spark-server/server/obj

@@ -1,0 +1,12 @@
+.ClusterClientRequest {
+    remoteNode      0 : string
+    remoteService   1 : string
+    method          2 : string
+    param           3 : string
+}
+
+.ClusterClientSocketConnected {
+    connection      0 : integer
+    ip              1 : string
+    port            2 : integer
+}

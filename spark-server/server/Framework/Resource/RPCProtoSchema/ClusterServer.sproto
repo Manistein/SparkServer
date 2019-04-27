@@ -1,0 +1,5 @@
+.ClusterServerSocketAccept {
+	connection 0 : integer
+	ip         1 : string
+	port       2 : integer
+}

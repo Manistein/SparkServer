@@ -1,0 +1,13 @@
+.TestData {
+  v1 1: integer(4)
+  v2 2: *integer(2)
+  v3 3: binary
+  v4 4: *binary
+  v5 5: integer
+  v6 6: string
+}
+
+.Foor {
+    test1 1: *TestData(v1)
+    test2 2: *TestData
+}

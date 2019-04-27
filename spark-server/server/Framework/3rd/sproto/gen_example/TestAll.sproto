@@ -1,0 +1,16 @@
+.Foobar {
+  .Nest {
+    a 1 : string
+    b 3 : boolean
+    c 5 : integer
+  }
+  a 0 : string
+  b 1 : integer
+  c 2 : boolean
+  d 3 : Nest
+
+  e 4 : *string
+  f 5 : *integer
+  g 6 : *boolean
+  h 7 : *Foobar
+}

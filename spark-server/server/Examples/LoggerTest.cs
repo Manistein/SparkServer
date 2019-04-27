@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 
-using SparkServer.Game.Service;
-using SparkServer.Game.Service.Logger;
+using SparkServer.Framework.Service;
+using SparkServer.Framework.Service.Logger;
 
 
 namespace SparkServer.TestUtil
@@ -12,7 +12,7 @@ namespace SparkServer.TestUtil
         public void Run()
         {
             LoggerService logerService = new LoggerService();
-            logerService.Init(100);
+            logerService.Init();
 
             Random ro = new Random();
 

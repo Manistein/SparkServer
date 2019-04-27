@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SparkServer.Network;
 using SparkServer.Examples;
-using SparkServer.Game;
+using SparkServer.Framework;
 using SparkServer.TestUtil;
 
 namespace SparkServer
@@ -24,13 +24,9 @@ namespace SparkServer
             {
                 mode = 2;
             }
-            else if (inputMode == "BattleServer")
+            else if (inputMode == "SparkServer")
             {
                 mode = 3;
-            }
-            else if (inputMode == "LoggerTest")
-            {
-                mode = 4;
             }
             else
             {
@@ -52,19 +48,21 @@ namespace SparkServer
                     }break;
                 case 3:
                     {
+                        string bootPath = args[1];
+
                         Server battleServer = new Server();
-                        battleServer.Run();
+                        battleServer.Run(bootPath, InitBattleServices);
                     }break;
-                case 4:
-                    {
-                        LoggerTestUtil loggerUtil = new LoggerTestUtil();
-                        loggerUtil.Run();
-                    } break;
                 default:
                     {
                         Console.WriteLine("Mode:{0} not supported", mode);
                     }break;
             }
+        }
+
+        public static void InitBattleServices()
+        {
+
         }
     }
 }

@@ -1,0 +1,30 @@
+.SocketError {
+    connection 0 : integer
+    errorCode  1 : integer
+    errorText  2 : string
+}
+
+.SocketData {
+    connection 0 : integer
+    buffer     1 : string
+}
+
+.RPCParam {
+	method 0 : string
+	param  1 : string
+}
+
+RPC 100 {
+	request RPCParam
+	response RPCParam
+}
+
+Timer 101 {
+}
+
+Error 102 {
+	response {
+		errorCode 0 : integer
+		errorText 1 : string
+	}
+}

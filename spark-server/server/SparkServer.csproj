@@ -7,11 +7,26 @@
     <ProjectGuid>{F44769E6-B8AB-4E31-A97F-1EA17A4549CD}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BattleServer</RootNamespace>
-    <AssemblyName>battle-server</AssemblyName>
+    <RootNamespace>SparkServer</RootNamespace>
+    <AssemblyName>spark-server</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +48,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.6.2\lib\net45\NLog.dll</HintPath>
     </Reference>
@@ -53,40 +71,116 @@
     <Compile Include="Examples\LoggerTest.cs" />
     <Compile Include="Examples\TCPClientExample.cs" />
     <Compile Include="Examples\TCPServerExample.cs" />
-    <Compile Include="Game\MessageQueue\GlobalMQ.cs" />
-    <Compile Include="Game\MessageQueue\NetworkPacketQueue.cs" />
-    <Compile Include="Game\Server.cs" />
-    <Compile Include="Game\MessageQueue\SkynetPacketManager.cs" />
-    <Compile Include="Game\Service\Battle\BattleTaskService.cs" />
-    <Compile Include="Game\Service\Logger\LoggerService.cs" />
-    <Compile Include="Game\Service\Base\ServiceBase.cs" />
-    <Compile Include="Game\Service\ServiceSlots.cs" />
-    <Compile Include="Game\Utility\ConfigHelper.cs" />
-    <Compile Include="Game\Utility\LoggerHelper.cs" />
-    <Compile Include="Game\Utility\ProtoHelper.cs" />
-    <Compile Include="Game\Utility\RPCHelper.cs" />
-    <Compile Include="Network\BufferPool.cs" />
-    <Compile Include="Network\InboundPacketManager.cs" />
-    <Compile Include="Network\OutboundPacketManager.cs" />
-    <Compile Include="Network\Session.cs" />
-    <Compile Include="Network\TCPClient.cs" />
-    <Compile Include="Network\TCPServer.cs" />
-    <Compile Include="Network\TCPSynchronizeContext.cs" />
+    <Compile Include="Framework\3rd\sproto\gen_example\BenchMark.cs" />
+    <Compile Include="Framework\3rd\sproto\gen_example\Member.cs" />
+    <Compile Include="Framework\3rd\sproto\gen_example\TestAll.cs" />
+    <Compile Include="Framework\3rd\sproto\gen_example\TestDecAndBinary.cs" />
+    <Compile Include="Framework\3rd\sproto\gen_example\TestMap.cs" />
+    <Compile Include="Framework\3rd\sproto\gen_example\TestRpc.cs" />
+    <Compile Include="Framework\3rd\sproto\src\Package.cs" />
+    <Compile Include="Framework\3rd\sproto\src\ProtocolBase.cs" />
+    <Compile Include="Framework\3rd\sproto\src\ProtocolFunctionDictionary.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoPack.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoRpc.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoStream.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoTypeBase.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoTypeDeserialize.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoTypeFieldOP.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoTypeReader.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoTypeSerialize.cs" />
+    <Compile Include="Framework\3rd\sproto\src\SprotoTypeSize.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseBase.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseMap.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseRpc.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseSproto.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseSprotoPack.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseSprotoTypeDeserialize.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseSprotoTypeFieldOP.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseSprotoTypeSerialize.cs" />
+    <Compile Include="Framework\3rd\sproto\testCase\TestCaseTestAll.cs" />
+    <Compile Include="Framework\MessageQueue\GlobalMQ.cs" />
+    <Compile Include="Framework\MessageQueue\NetworkPacketQueue.cs" />
+    <Compile Include="Framework\Resource\RPCProtoCS\ClusterClient.cs" />
+    <Compile Include="Framework\Resource\RPCProtoCS\ClusterServer.cs" />
+    <Compile Include="Framework\Resource\RPCProtoCS\Common.cs" />
+    <Compile Include="Framework\Resource\RPCProtoCS\NetProtocol.cs" />
+    <Compile Include="Framework\Server.cs" />
+    <Compile Include="Framework\MessageQueue\SkynetPacketManager.cs" />
+    <Compile Include="Framework\Service\ClusterClient\ClusterClient.cs" />
+    <Compile Include="Framework\Service\ClusterServer\ClusterServer.cs" />
+    <Compile Include="Framework\Service\Logger\LoggerService.cs" />
+    <Compile Include="Framework\Service\Base\ServiceBase.cs" />
+    <Compile Include="Framework\Service\ServiceSlots.cs" />
+    <Compile Include="Framework\Utility\ConfigHelper.cs" />
+    <Compile Include="Framework\Utility\LoggerHelper.cs" />
+    <Compile Include="Framework\Utility\ProtoHelper.cs" />
+    <Compile Include="Framework\Network\BufferPool.cs" />
+    <Compile Include="Framework\Network\InboundPacketManager.cs" />
+    <Compile Include="Framework\Network\OutboundPacketManager.cs" />
+    <Compile Include="Framework\Network\Session.cs" />
+    <Compile Include="Framework\Network\TCPClient.cs" />
+    <Compile Include="Framework\Network\TCPObject.cs" />
+    <Compile Include="Framework\Network\TCPObjectContainer.cs" />
+    <Compile Include="Framework\Network\TCPServer.cs" />
+    <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
+    <Compile Include="Framework\Utility\SparkServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Framework\Tools\sproto2cs\lib\lfs.dll" />
+    <Content Include="Framework\Tools\sproto2cs\lib\lpeg.dll" />
+    <Content Include="Framework\Tools\sproto2cs\lib\lua.dll" />
+    <Content Include="Framework\Tools\sproto2cs\lib\lua.exe" />
+    <Content Include="Framework\Tools\sproto2cs\lib\msvcr120d.dll" />
     <None Include="App.config" />
+    <Content Include="Framework\3rd\sproto\.gitmodules" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Framework\3rd\sproto\gen_example\Member.sproto" />
+    <None Include="Framework\3rd\sproto\gen_example\TestAll.sproto" />
+    <None Include="Framework\3rd\sproto\gen_example\TestDecAndBinary.sproto" />
+    <None Include="Framework\3rd\sproto\gen_example\TestMap.sproto" />
+    <None Include="Framework\3rd\sproto\gen_example\TestRpc.sproto" />
+    <None Include="Framework\3rd\sproto\README.md" />
+    <None Include="Framework\Resource\RPCProtoSchema\ClusterClient.sproto" />
+    <None Include="Framework\Resource\RPCProtoSchema\ClusterServer.sproto" />
+    <None Include="Framework\Resource\RPCProtoSchema\Common.sproto" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="Framework\Tools\sproto2cs\sproto2cs.bat" />
+    <None Include="Framework\Tools\sproto2cs\sproto2cs.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\core.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\module\cSharp.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\module\go.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\module\md.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\module\spb.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\module\table.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\param.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\README.md" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\serpent.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\sprotodump.lua" />
+    <None Include="Framework\Tools\sproto2cs\sprotodump\util.lua" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Game\Service\Battle\Module\" />
+    <Folder Include="Framework\3rd\sproto\tools\" />
+    <Folder Include="Framework\Resource\Config\" />
+    <Folder Include="Game\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

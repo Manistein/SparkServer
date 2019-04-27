@@ -29,7 +29,7 @@ namespace SparkServer.Examples
 
             m_userDataDict = new Dictionary<long, UserData>();
             m_tcpServer = new TCPServer();
-            m_tcpServer.Start(serverIP, port, backlog, OnSessionError, OnReadPacketComplete, OnAcceptComplete);
+            m_tcpServer.Start(serverIP, port, backlog, 0, OnSessionError, OnReadPacketComplete, OnAcceptComplete);
 
             Console.WriteLine("Start server bind at {0} {1} backlog is {2}", serverIP, port, backlog);
 
@@ -40,13 +40,13 @@ namespace SparkServer.Examples
             }
         }
 
-        private void OnSessionError(long sessionId, int errorCode, string errorText)
+        private void OnSessionError(int opaque, long sessionId, int errorCode, string errorText)
         {
             m_userDataDict.Remove(sessionId);
             Console.WriteLine("OnSessionError sessionId:{0} errorCode:{1} errorText:{2}", sessionId, errorCode, errorText);
         }
 
-        private void OnReadPacketComplete(long sessionId, byte[] bytes, int packetSize)
+        private void OnReadPacketComplete(int opaque, long sessionId, byte[] bytes, int packetSize)
         {
             m_receiveCount++;
 
@@ -70,7 +70,7 @@ namespace SparkServer.Examples
             }
         }
 
-        private void OnAcceptComplete(long sessionId, string ip, int port)
+        private void OnAcceptComplete(int opaque, long sessionId, string ip, int port)
         {
             UserData ud = null;
             bool isSuccess = m_userDataDict.TryGetValue(sessionId, out ud);

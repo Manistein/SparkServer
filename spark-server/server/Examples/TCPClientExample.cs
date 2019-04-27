@@ -18,7 +18,7 @@ namespace SparkServer.Examples
         public void Run()
         {
             m_tcpClient = new TCPClient();
-            m_tcpClient.Start(OnSessionError, OnReadPacketComplete, OnConnectComplete);
+            m_tcpClient.Start(0, OnSessionError, OnReadPacketComplete, OnConnectComplete);
             m_tcpClient.Connect("127.0.0.1", 50001);
 
             m_isConnected = false;
@@ -54,7 +54,7 @@ namespace SparkServer.Examples
             }
         }
 
-        private void OnConnectComplete(long sessionId, string ip, int port)
+        private void OnConnectComplete(int opaque, long sessionId, string ip, int port)
         {
             if (m_userData != null)
             {
@@ -73,13 +73,13 @@ namespace SparkServer.Examples
             }
         }
 
-        private void OnSessionError(long sessionId, int errorCode, string errorText)
+        private void OnSessionError(int opaque, long sessionId, int errorCode, string errorText)
         {
             m_isConnected = false;
             Console.WriteLine("OnSessionError sessionId:{0} errorCode:{1} errorText:{2}", sessionId, errorCode, errorText);
         }
 
-        private void OnReadPacketComplete(long sessionId, byte[] bytes, int packetSize)
+        private void OnReadPacketComplete(int opaque, long sessionId, byte[] bytes, int packetSize)
         {
             m_receiveCount++;
             Console.WriteLine("OnReadPacketComplete sessionId:{0} hashCode:{1} content:{2} packetSize:{3} timestamp:{4} receiveCount:{5}", 

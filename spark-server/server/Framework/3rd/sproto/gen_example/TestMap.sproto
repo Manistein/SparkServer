@@ -1,0 +1,16 @@
+.MetaData {
+  name 0 : string
+  id 1   : integer
+
+  .Info {
+    v1 1: string
+    v2 2: boolean 
+    v3 3: integer
+  }
+
+  d1 2 : *Info(v1)
+  d2 3 : *Info(v2)
+  d3 4 : *Info(v3)
+
+  a1  5: *Info
+}

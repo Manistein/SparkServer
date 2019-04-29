@@ -149,6 +149,12 @@ namespace SparkServer.Framework.MessageQueue
         MULTI_END    = 4,
     }
 
+    enum LargePacketType
+    {
+        REQUEST     = 1,
+        RESPONSE    = 2,
+    }
+
     enum LuaNumberSubType
     {
         TYPE_NUMBER_ZERO    = 0,
@@ -170,13 +176,14 @@ namespace SparkServer.Framework.MessageQueue
         public byte[] Data { get; set; }
     }
 
-    class SkynetLargeRequest
+    class SkynetLargePacket
     {
         public int Tag { get; set; }
         public string ServiceName { get; set; }
         public int Session { get; set; }
         public int TotalDataSize { get; set; }
         public List<SkynetMessage> Messages { get; set; }
+        public LargePacketType Type { get; set; }
     }
 
     class SkynetClusterRequest
@@ -197,13 +204,15 @@ namespace SparkServer.Framework.MessageQueue
 
     class SkynetPacketManager
     {
-        private Dictionary<int, SkynetLargeRequest> m_largePackets;
+        private Dictionary<int, SkynetLargePacket> m_largeRequestPackets;
+        private Dictionary<int, SkynetLargePacket> m_largeResponsePackets;
         private int m_sourceId;
         private const int MultiPart = 0x8000;
 
         public void Init(int serviceId)
         {
-            m_largePackets = new Dictionary<int, SkynetLargeRequest>();
+            m_largeRequestPackets = new Dictionary<int, SkynetLargePacket>();
+            m_largeResponsePackets = new Dictionary<int, SkynetLargePacket>();
             m_sourceId = serviceId;
         }
 
@@ -233,9 +242,32 @@ namespace SparkServer.Framework.MessageQueue
                 result.Add(headerBytes);
 
                 int part = (msg.Length - 1) / MultiPart + 1;
+                int sz = msg.Length;
+                int copyedBytes = 0;
                 for (int i = 0; i < part; i ++)
                 {
+                    if (sz > MultiPart)
+                    {
+                        byte[] tempData = new byte[MultiPart + 5];
+                        int tempIndex = PackHeader(tempData, (int)RequestPacketTag.FRAGMENT, "", session);
+                        Array.Copy(msg, copyedBytes, tempData, 5, MultiPart);
 
+                        sz -= MultiPart;
+                        copyedBytes += MultiPart;
+
+                        result.Add(tempData);
+                    }
+                    else
+                    {
+                        byte[] tempData = new byte[sz + 5];
+                        int tempIndex = PackHeader(tempData, (int)RequestPacketTag.LAST_FRAGMENT, "", session);
+                        Array.Copy(msg, copyedBytes, tempData, 5, sz);
+
+                        sz -= sz;
+                        copyedBytes += sz;
+
+                        result.Add(tempData);
+                    }
                 }
             }
 
@@ -251,14 +283,14 @@ namespace SparkServer.Framework.MessageQueue
             {
                 case (byte)RequestPacketTag.NORMAL_PACKET:
                     {
-                        request = UnpackNormalPacket(msg);
+                        request = UnpackNormalRequestPacket(msg);
                     }break;
                 case (byte)RequestPacketTag.LARGE_PACKET:
                 case (byte)RequestPacketTag.FRAGMENT:
                 case (byte)RequestPacketTag.LAST_FRAGMENT:
                 case (byte)RequestPacketTag.LARGE_PUSH:
                     {
-                        request = UnpackLargePacket((RequestPacketTag)tag, msg);
+                        request = UnpackLargeRequestPacket((RequestPacketTag)tag, msg);
                     }break;
                 default:
                     {
@@ -338,7 +370,102 @@ namespace SparkServer.Framework.MessageQueue
 
         public SkynetClusterResponse UnpackSkynetResponse(byte[] msg)
         {
-            return null;
+            SkynetClusterResponse response = null;
+
+            int startIndex = 0;
+            int session = msg[0] | msg[1] << 8 | msg[2] << 16 | msg[3] << 24;
+            startIndex += 4;
+
+            response.Session = session;
+
+            int tag = msg[startIndex];
+            startIndex++;
+
+            switch((ResponsePacketTag)tag)
+            {
+                case ResponsePacketTag.OK:
+                    {
+                        response = new SkynetClusterResponse();
+
+                        int byteCount = 0;
+                        int protoId = (int)UnpackInteger(msg, startIndex, out byteCount);
+                        startIndex += byteCount;
+                        byte[] tempData = UnpackString(msg, startIndex);
+
+                        response.ErrorCode = RPCError.OK;
+                        response.ProtoId = protoId;
+                        response.Data = tempData;
+                    }
+                    break;
+                case ResponsePacketTag.ERROR:
+                    {
+                        response = new SkynetClusterResponse();
+
+                        response.ErrorCode = RPCError.RemoteError;
+                        response.ProtoId = 0;
+                        response.Data = UnpackString(msg, startIndex);
+                    } break;
+                case ResponsePacketTag.MULTI_BEGIN:
+                    {
+                        SkynetLargePacket largePacket = null;
+                        bool isExist = m_largeResponsePackets.TryGetValue(session, out largePacket);
+                        if (!isExist)
+                        {
+                            largePacket = new SkynetLargePacket();
+                            m_largeResponsePackets.Add(session, largePacket);
+                        }
+
+                        largePacket.Tag = tag;
+                        largePacket.Type = LargePacketType.RESPONSE;
+                        largePacket.Session = session;
+
+                        int byteCount = 0;
+                        largePacket.TotalDataSize = (int)UnpackInteger(msg, startIndex, out byteCount);
+                        largePacket.Messages = new List<SkynetMessage>();
+                    } break;
+                case ResponsePacketTag.MULTI_PART:
+                    {
+                        SkynetLargePacket largePacket = null;
+                        bool isExist = m_largeResponsePackets.TryGetValue(session, out largePacket);
+                        if (isExist)
+                        {
+                            SkynetMessage skynetMessage = new SkynetMessage();
+                            skynetMessage.Size = msg.Length - 5;
+                            skynetMessage.Data = UnpackString(msg, startIndex);
+
+                            largePacket.Messages.Add(skynetMessage);
+                        }
+                    } break;
+                case ResponsePacketTag.MULTI_END:
+                    {
+                        SkynetLargePacket largePacket = null;
+                        bool isExist = m_largeResponsePackets.TryGetValue(session, out largePacket);
+                        if (isExist)
+                        {
+                            response = new SkynetClusterResponse();
+
+                            byte[] tempData = new byte[largePacket.TotalDataSize];
+                            int tempStartIndex = 0;
+                            int count = largePacket.Messages.Count;
+                            for (int i = 0; i < count; i ++)
+                            {
+                                SkynetMessage skynetMessage = largePacket.Messages[i];
+                                Array.Copy(skynetMessage.Data, 0, tempData, tempStartIndex, skynetMessage.Size);
+                                tempStartIndex += skynetMessage.Size;
+                            }
+
+                            Array.Copy(msg, 5, tempData, tempStartIndex, msg.Length - 5);
+
+                            int byteCount = 0;
+                            response.ErrorCode = RPCError.OK;
+                            response.ProtoId = (int)UnpackInteger(tempData, 0, out byteCount);
+                            response.Data = UnpackString(tempData, byteCount);
+                        }
+                    } break;
+                default: break;
+            }
+
+            return response;
         }
 
         private byte[] PackInteger(Int64 value)
@@ -425,14 +552,25 @@ namespace SparkServer.Framework.MessageQueue
 
         private int PackHeader(byte[] data, int tag, string name, int session)
         {
+            int startIndex = 0;
             data[0] = (byte)tag;
-            data[1] = (byte)name.Length;
-            byte[] nameBytes = Encoding.ASCII.GetBytes(name);
-            nameBytes.CopyTo(data, 2);
-            byte[] sessionBytes = BitConverter.GetBytes(session);
-            sessionBytes.CopyTo(data, nameBytes.Length + 2);
+            startIndex += 1;
 
-            return nameBytes.Length + 6;
+            if (name.Length > 0)
+            {
+                data[1] = (byte)name.Length;
+                startIndex += 1;
+
+                byte[] nameBytes = Encoding.ASCII.GetBytes(name);
+                nameBytes.CopyTo(data, 2);
+                startIndex += nameBytes.Length;
+            }
+
+            byte[] sessionBytes = BitConverter.GetBytes(session);
+            sessionBytes.CopyTo(data, startIndex);
+            startIndex += 4;
+
+            return startIndex;
         }
 
         private void UnpackHeader(byte[] data, out byte tag, out string name, out int nameLength, out int session)
@@ -539,7 +677,7 @@ namespace SparkServer.Framework.MessageQueue
             return buffer;
         }
 
-        private SkynetClusterRequest UnpackNormalPacket(byte[] data)
+        private SkynetClusterRequest UnpackNormalRequestPacket(byte[] data)
         {
             SkynetClusterRequest request = new SkynetClusterRequest();
 
@@ -567,7 +705,7 @@ namespace SparkServer.Framework.MessageQueue
             return request;
         }
 
-        private SkynetClusterRequest UnpackLargePacket(RequestPacketTag tag, byte[] data)
+        private SkynetClusterRequest UnpackLargeRequestPacket(RequestPacketTag tag, byte[] data)
         {
             SkynetClusterRequest request = null;
 
@@ -583,23 +721,24 @@ namespace SparkServer.Framework.MessageQueue
                         int session = 0;
                         UnpackHeader(data, out tempTag, out name, out nameLength, out session);
 
-                        if (m_largePackets.ContainsKey(session))
+                        if (m_largeRequestPackets.ContainsKey(session))
                         {
                             LoggerHelper.Info(m_sourceId, String.Format("SkynetPacketManager.UnpackLargePacket multi header for same session {0}", session));
-                            m_largePackets.Remove(session);
+                            m_largeRequestPackets.Remove(session);
                         }
 
                         int startIndex = nameLength + 6;
                         int totalDataSize = data[startIndex + 3] << 24 | data[startIndex + 2] << 16 | data[startIndex + 1] << 8 | data[startIndex];
 
-                        SkynetLargeRequest largeRequest = new SkynetLargeRequest();
+                        SkynetLargePacket largeRequest = new SkynetLargePacket();
                         largeRequest.ServiceName = name;
                         largeRequest.Session = session;
                         largeRequest.Tag = (int)tempTag;
                         largeRequest.TotalDataSize = totalDataSize;
                         largeRequest.Messages = new List<SkynetMessage>();
+                        largeRequest.Type = LargePacketType.REQUEST;
 
-                        m_largePackets.Add(session, largeRequest);
+                        m_largeRequestPackets.Add(session, largeRequest);
                     }break;
                 case RequestPacketTag.FRAGMENT:
                 case RequestPacketTag.LAST_FRAGMENT:
@@ -614,8 +753,8 @@ namespace SparkServer.Framework.MessageQueue
                         skynetMessage.Data = msg;
                         skynetMessage.Size = size;
 
-                        SkynetLargeRequest largeRequest = null;
-                        bool isSuccess = m_largePackets.TryGetValue(session, out largeRequest);
+                        SkynetLargePacket largeRequest = null;
+                        bool isSuccess = m_largeRequestPackets.TryGetValue(session, out largeRequest);
                         if (!isSuccess)
                         {
                             LoggerHelper.Info(m_sourceId, String.Format("SkynetPacketManager.UnpackLargePacket illegal FRAGMENT {0}", session));
@@ -654,7 +793,7 @@ namespace SparkServer.Framework.MessageQueue
                             request.Session = session;
                             request.Data = unpackMsg;
 
-                            m_largePackets.Remove(session);
+                            m_largeRequestPackets.Remove(session);
                         }
                     }break;
                 default: break;

@@ -169,11 +169,15 @@ namespace SparkServer.Framework.Service.ClusterClient
                 return;
             }
 
-            int tag = NetProtocol.GetInstance().GetTag("RPC");
-            RPCParam rpcParam = new RPCParam(response.Data);
+            byte[] tempParm = null;
+            if (response.ErrorCode == RPCError.OK)
+            {
+                RPCParam rpcParam = new RPCParam(response.Data);
+                tempParm = Encoding.ASCII.GetBytes(rpcParam.param);
+            }
 
             int remoteSession = response.Session;
-            ProcessRemoteResponse(remoteSession, Encoding.ASCII.GetBytes(rpcParam.param), response.ErrorCode);
+            ProcessRemoteResponse(remoteSession, tempParm, response.ErrorCode);
         }
 
         private void ProcessRemoteResponse(int remoteSession, byte[] param, RPCError errorCode)

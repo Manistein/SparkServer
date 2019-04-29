@@ -19,6 +19,7 @@ namespace SparkServer.Framework.Service
         OK                    = 0,
         MethodNotExist        = 1,
         SocketDisconnected    = 2,
+        RemoteError           = 3,
     }
 
     // RPC context

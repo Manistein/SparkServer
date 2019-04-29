@@ -79,11 +79,13 @@ namespace SparkServer.Framework
             ClusterServer clusterServer = new ClusterServer();
             clusterServer.Init();
             m_serviceSlots.Add(clusterServer);
+            m_serviceSlots.Name(clusterServer.GetId(), "clusterServer");
 
             ClusterClient clusterClient = new ClusterClient();
             clusterClient.Init();
             m_serviceSlots.Add(clusterClient);
             clusterClient.ParseClusterConfig(m_bootConfig["ClusterConfig"].ToString());
+            m_serviceSlots.Name(clusterClient.GetId(), "clusterClient");
 
             m_tcpObjectContainer = new TCPObjectContainer();
             m_clusterTCPServer = new TCPServer();

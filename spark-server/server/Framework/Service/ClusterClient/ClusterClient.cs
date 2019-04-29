@@ -254,6 +254,10 @@ namespace SparkServer.Framework.Service.ClusterClient
             rpcParam.method = method;
             rpcParam.param = request.param;
 
+            if (m_totalRemoteSession >= Int32.MaxValue)
+            {
+                m_totalRemoteSession = 0;
+            }
             int remoteSession = ++m_totalRemoteSession;
             List<byte[]> buffers = m_skynetPacketManager.PackSkynetRequest(request.remoteService, remoteSession, tag, rpcParam.encode());
 

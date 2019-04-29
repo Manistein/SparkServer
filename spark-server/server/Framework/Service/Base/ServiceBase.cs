@@ -244,12 +244,29 @@ namespace SparkServer.Framework.Service
 
         protected void RemoteSend(string remoteNode, string service, string method, byte[] param)
         {
+            ClusterClientRequest request = new ClusterClientRequest();
+            request.remoteNode = remoteNode;
+            request.remoteService = service;
+            request.method = method;
+            request.param = Encoding.ASCII.GetString(param);
 
+            Call("clusterClient", "Request", request.encode(), null, RemoteSendDummyCallback);
+        }
+
+        private void RemoteSendDummyCallback(SSContext context, string method, byte[] param, RPCError error)
+        {
+            // Nothing to do
         }
 
         protected void RemoteCall(string remoteNode, string service, string method, byte[] param, SSContext context, RPCCallback cb)
         {
+            ClusterClientRequest request = new ClusterClientRequest();
+            request.remoteNode = remoteNode;
+            request.remoteService = service;
+            request.method = method;
+            request.param = Encoding.ASCII.GetString(param);
 
+            Call("clusterClient", "Request", request.encode(), context, cb);
         }
 
         protected void DoResponse(int destination, string method, byte[] param, int session)

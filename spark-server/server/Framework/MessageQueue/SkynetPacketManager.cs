@@ -207,9 +207,39 @@ namespace SparkServer.Framework.MessageQueue
             m_sourceId = serviceId;
         }
 
-        public List<byte[]> PackSkynetRequest(string serviceName, int Session, int protoId, byte[] data)
+        public List<byte[]> PackSkynetRequest(string serviceName, int session, int protoId, byte[] data)
         {
-            return null;
+            List<byte[]> result = new List<byte[]>();
+            byte[] protoIdBytes = PackInteger(protoId);
+            byte[] dataBytes = PackString(data);
+
+            byte[] msg = new byte[protoIdBytes.Length + dataBytes.Length];
+            protoIdBytes.CopyTo(msg, 0);
+            dataBytes.CopyTo(msg, protoIdBytes.Length);
+
+            if (msg.Length < MultiPart)
+            {
+                byte[] tempData = new byte[msg.Length + serviceName.Length + 6];
+                int startIndex = PackHeader(tempData, (int)RequestPacketTag.NORMAL_PACKET, serviceName, session);
+                msg.CopyTo(tempData, startIndex);
+                result.Add(tempData);
+            }
+            else
+            {
+                byte[] headerBytes = new byte[serviceName.Length + 10];
+                int startIndex = PackHeader(headerBytes, (int)RequestPacketTag.LARGE_PACKET, serviceName, session);
+                byte[] msgLengthBytes = BitConverter.GetBytes(msg.Length);
+                msgLengthBytes.CopyTo(headerBytes, startIndex);
+                result.Add(headerBytes);
+
+                int part = (msg.Length - 1) / MultiPart + 1;
+                for (int i = 0; i < part; i ++)
+                {
+
+                }
+            }
+
+            return result;
         }
 
         public SkynetClusterRequest UnpackSkynetRequest(byte[] msg)
@@ -391,6 +421,18 @@ namespace SparkServer.Framework.MessageQueue
                 }
             }
             return result;
+        }
+
+        private int PackHeader(byte[] data, int tag, string name, int session)
+        {
+            data[0] = (byte)tag;
+            data[1] = (byte)name.Length;
+            byte[] nameBytes = Encoding.ASCII.GetBytes(name);
+            nameBytes.CopyTo(data, 2);
+            byte[] sessionBytes = BitConverter.GetBytes(session);
+            sessionBytes.CopyTo(data, nameBytes.Length + 2);
+
+            return nameBytes.Length + 6;
         }
 
         private void UnpackHeader(byte[] data, out byte tag, out string name, out int nameLength, out int session)

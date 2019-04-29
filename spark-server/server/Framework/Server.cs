@@ -13,6 +13,7 @@ using SparkServer.Framework.Service.ClusterServer;
 using SparkServer.Framework.Service.ClusterClient;
 using NetSprotoType;
 using Newtonsoft.Json.Linq;
+using SparkServer.Framework.Timer;
 
 namespace SparkServer.Framework
 {
@@ -33,6 +34,7 @@ namespace SparkServer.Framework
         private GlobalMQ m_globalMQ;
         private ServiceSlots m_serviceSlots;
         private NetworkPacketQueue m_netpackQueue;
+        private SSTimer m_timer;
 
         public void Run(string bootPath, BootServices customBoot)
         {
@@ -64,6 +66,7 @@ namespace SparkServer.Framework
             m_globalMQ = GlobalMQ.GetInstance();
             m_serviceSlots = ServiceSlots.GetInstance();
             m_netpackQueue = NetworkPacketQueue.GetInstance();
+            m_timer = SSTimer.GetInstance();
 
             NetProtocol.GetInstance();
 
@@ -103,6 +106,9 @@ namespace SparkServer.Framework
                 Thread thread = new Thread(new ThreadStart(ThreadWorker));
                 thread.Start();
             }
+
+            Thread timerThread = new Thread(new ThreadStart(ThreadTimer));
+            timerThread.Start();
         }
 
         private void Loop()
@@ -111,6 +117,7 @@ namespace SparkServer.Framework
             {
                 m_clusterTCPServer.Loop();
                 m_clusterTCPClient.Loop();
+
                 ProcessOutbound();
 
                 Thread.Sleep(1);
@@ -136,6 +143,15 @@ namespace SparkServer.Framework
                         m_globalMQ.Push(service.GetId());
                     }
                 }
+            }
+        }
+
+        private void ThreadTimer()
+        {
+            while(true)
+            {
+                m_timer.Loop();
+                Thread.Sleep(1);
             }
         }
 

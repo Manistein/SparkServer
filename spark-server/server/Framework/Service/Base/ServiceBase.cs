@@ -8,11 +8,13 @@ using System.Collections.Concurrent;
 using SparkServer.Framework.MessageQueue;
 using SparkServer.Framework.Utility;
 using NetSprotoType;
+using SparkServer.Framework.Timer;
 
 namespace SparkServer.Framework.Service
 {
     delegate void Method(int source, int session, string method, byte[] param);
-    delegate void RPCCallback(RPCContext context, string method, byte[] param, RPCError error);
+    delegate void RPCCallback(SSContext context, string method, byte[] param, RPCError error);
+    delegate void TimeoutCallback(SSContext context, long currentTime);
 
     enum RPCError
     {
@@ -22,8 +24,8 @@ namespace SparkServer.Framework.Service
         RemoteError           = 3,
     }
 
-    // RPC context
-    class RPCContext
+    // Spark Server context
+    class SSContext
     {
         public Dictionary<string, int>    IntegerDict = new Dictionary<string, int>();
         public Dictionary<string, float>  FloatDict   = new Dictionary<string, float>();
@@ -33,10 +35,16 @@ namespace SparkServer.Framework.Service
         public Dictionary<string, object> ObjectDict  = new Dictionary<string, object>();
     }
 
-    class RPCResponseCallback
+    class RPCResponseContext
     {
-        public RPCContext Context { get; set; }
+        public SSContext Context { get; set; }
         public RPCCallback Callback { get; set; }
+    }
+
+    class TimeoutContext
+    {
+        public TimeoutCallback Callback { get; set; }
+        public SSContext Context { get; set; }
     }
 
     enum MessageType
@@ -45,6 +53,7 @@ namespace SparkServer.Framework.Service
         ServiceRequest  = 2,
         ServiceResponse = 3,
         Error           = 4,
+        Timer           = 5,
     }
 
     class Message
@@ -68,7 +77,8 @@ namespace SparkServer.Framework.Service
         protected int m_totalServiceSession = 0;
 
         private Dictionary<string, Method> m_serviceMethods = new Dictionary<string, Method>();
-        private Dictionary<int, RPCResponseCallback> m_responseCallbacks = new Dictionary<int, RPCResponseCallback>();
+        private Dictionary<int, RPCResponseContext> m_responseCallbacks = new Dictionary<int, RPCResponseContext>();
+        private Dictionary<int, TimeoutContext> m_timeoutCallbacks = new Dictionary<int, TimeoutContext>();
 
         public virtual void Init()
         {
@@ -98,7 +108,12 @@ namespace SparkServer.Framework.Service
                         break;
                     case MessageType.Socket:
                         {
-                            OnSocket(msg);
+                            OnSocketCommand(msg);
+                        }
+                        break;
+                    case MessageType.Timer:
+                        {
+                            OnTimer(msg);
                         }
                         break;
                     default: break;
@@ -128,7 +143,7 @@ namespace SparkServer.Framework.Service
 
         private void OnResponse(Message msg)
         {
-            RPCResponseCallback responseCallback = null;
+            RPCResponseContext responseCallback = null;
             bool isExist = m_responseCallbacks.TryGetValue(msg.RPCSession, out responseCallback);
             if (isExist)
             {
@@ -147,7 +162,7 @@ namespace SparkServer.Framework.Service
             int tag = instance.GetTag(msg.Method);
             Error.response sprotoError = (Error.response)instance.Protocol.GenResponse(tag, msg.Data);
 
-            RPCResponseCallback responseCallback = null;
+            RPCResponseContext responseCallback = null;
             bool isExist = m_responseCallbacks.TryGetValue(msg.RPCSession, out responseCallback);
             if (isExist)
             {
@@ -161,9 +176,22 @@ namespace SparkServer.Framework.Service
             }
         }
 
-        protected virtual void OnSocket(Message msg)
+        protected virtual void OnSocketCommand(Message msg)
         {
 
+        }
+
+        protected virtual void OnTimer(Message msg)
+        {
+            TimeoutContext context = null;
+            bool isExist = m_timeoutCallbacks.TryGetValue(msg.RPCSession, out context);
+            if (isExist)
+            {
+                long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                context.Callback(context.Context, timestamp);
+
+                m_timeoutCallbacks.Remove(msg.RPCSession);
+            }
         }
 
         private void PushToService(int destination, string method, byte[] param, MessageType type, int session)
@@ -191,19 +219,24 @@ namespace SparkServer.Framework.Service
             Send(serviceId, method, param);
         }
 
-        protected void Call(int destination, string method, byte[] param, RPCContext context, RPCCallback cb)
+        protected void Call(int destination, string method, byte[] param, SSContext context, RPCCallback cb)
         {
+            if (m_totalServiceSession >= Int32.MaxValue)
+            {
+                m_totalServiceSession = 0;
+            }
+
             int session = ++m_totalServiceSession;
             PushToService(destination, method, param, MessageType.ServiceRequest, session);
 
-            RPCResponseCallback responseCallback = new RPCResponseCallback();
+            RPCResponseContext responseCallback = new RPCResponseContext();
             responseCallback.Context = context;
             responseCallback.Callback = cb;
 
             m_responseCallbacks.Add(session, responseCallback);
         }
 
-        protected void Call(string destination, string method, byte[] param, RPCContext context, RPCCallback cb)
+        protected void Call(string destination, string method, byte[] param, SSContext context, RPCCallback cb)
         {
             int serviceId = ServiceSlots.GetInstance().Name2Id(destination);
             Call(serviceId, method, param, context, cb);
@@ -214,7 +247,7 @@ namespace SparkServer.Framework.Service
 
         }
 
-        protected void RemoteCall(string remoteNode, string service, string method, byte[] param, RPCContext context, RPCCallback cb)
+        protected void RemoteCall(string remoteNode, string service, string method, byte[] param, SSContext context, RPCCallback cb)
         {
 
         }
@@ -235,6 +268,34 @@ namespace SparkServer.Framework.Service
         protected void RegisterServiceMethods(string methodName, Method method)
         {
             m_serviceMethods.Add(methodName, method);
+        }
+
+        protected void Timeout(SSContext context, long timeout, TimeoutCallback callback)
+        {
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            if (timeout <= 0)
+            {
+                callback(context, timestamp);
+            }
+            else
+            {
+                if (m_totalServiceSession >= Int32.MaxValue)
+                {
+                    m_totalServiceSession = 0;
+                }
+
+                SSTimerNode timerNode = new SSTimerNode();
+                timerNode.Opaque = m_serviceId;
+                timerNode.Session = ++m_totalServiceSession;
+                timerNode.TimeoutTimestamp = timestamp + timeout;
+
+                SSTimer.GetInstance().Add(timerNode);
+
+                TimeoutContext timeoutContext = new TimeoutContext();
+                timeoutContext.Callback = callback;
+                timeoutContext.Context = context;
+                m_timeoutCallbacks.Add(timerNode.Session, timeoutContext);
+            }
         }
 
         public Message Pop()

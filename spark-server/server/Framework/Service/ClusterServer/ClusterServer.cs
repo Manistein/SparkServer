@@ -30,9 +30,9 @@ namespace SparkServer.Framework.Service.ClusterServer
             m_tcpObjectId = tcpObjectId;
         }
 
-        protected override void OnSocket(Message msg)
+        protected override void OnSocketCommand(Message msg)
         {
-            base.OnSocket(msg);
+            base.OnSocketCommand(msg);
 
             Method method = null;
             bool isExist = m_socketMethods.TryGetValue(msg.Method, out method);
@@ -76,7 +76,7 @@ namespace SparkServer.Framework.Service.ClusterServer
             int tag = instance.GetTag("RPC");
             RPCParam sprotoRequest = (RPCParam)instance.Protocol.GenRequest(tag, req.Data);
 
-            RPCContext context = new RPCContext();
+            SSContext context = new SSContext();
             context.IntegerDict["RemoteSession"] = req.Session;
             context.LongDict["ConnectionId"] = connectionId;
 
@@ -84,7 +84,7 @@ namespace SparkServer.Framework.Service.ClusterServer
             Call(req.ServiceName, sprotoRequest.method, targetParam, context, TransferCallback);
         }
 
-        private void TransferCallback(RPCContext context, string method, byte[] param, RPCError error)
+        private void TransferCallback(SSContext context, string method, byte[] param, RPCError error)
         {
             if (error == RPCError.OK)
             {

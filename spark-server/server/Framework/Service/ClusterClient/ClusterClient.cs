@@ -28,7 +28,7 @@ namespace SparkServer.Framework.Service.ClusterClient
     {
         private Dictionary<string, long> m_node2conn = new Dictionary<string, long>();
         private Dictionary<string, Queue<WaitForSendRequest>> m_waitForSendRequests = new Dictionary<string, Queue<WaitForSendRequest>>();
-        private Dictionary<int, RPCResponseCallback> m_remoteResponseCallbacks = new Dictionary<int, RPCResponseCallback>();
+        private Dictionary<int, RPCResponseContext> m_remoteResponseCallbacks = new Dictionary<int, RPCResponseContext>();
         private Dictionary<long, Dictionary<int, WaitForResponseRequest>> m_conn2sessions = new Dictionary<long, Dictionary<int, WaitForResponseRequest>>();
         private int m_totalRemoteSession = 0;
 
@@ -61,9 +61,9 @@ namespace SparkServer.Framework.Service.ClusterClient
             m_tcpObjectId = tcpObjectId;
         }
 
-        protected override void OnSocket(Message msg)
+        protected override void OnSocketCommand(Message msg)
         {
-            base.OnSocket(msg);
+            base.OnSocketCommand(msg);
 
             Method method = null;
             bool isExist = m_socketMethods.TryGetValue(msg.Method, out method);
@@ -182,7 +182,7 @@ namespace SparkServer.Framework.Service.ClusterClient
 
         private void ProcessRemoteResponse(int remoteSession, byte[] param, RPCError errorCode)
         {
-            RPCResponseCallback responseCallback = null;
+            RPCResponseContext responseCallback = null;
             bool isExist = m_remoteResponseCallbacks.TryGetValue(remoteSession, out responseCallback);
             if (isExist)
             {
@@ -257,14 +257,14 @@ namespace SparkServer.Framework.Service.ClusterClient
             int remoteSession = ++m_totalRemoteSession;
             List<byte[]> buffers = m_skynetPacketManager.PackSkynetRequest(request.remoteService, remoteSession, tag, rpcParam.encode());
 
-            RPCContext rpcContext = new RPCContext();
+            SSContext rpcContext = new SSContext();
             rpcContext.LongDict["ConnectionId"] = connectionId;
             rpcContext.IntegerDict["RemoteSession"] = remoteSession;
             rpcContext.IntegerDict["SourceSession"] = session;
             rpcContext.IntegerDict["Source"] = source;
             rpcContext.StringDict["Method"] = method;
 
-            RPCResponseCallback rpcResponseCallback = new RPCResponseCallback();
+            RPCResponseContext rpcResponseCallback = new RPCResponseContext();
             rpcResponseCallback.Callback = RemoteResponseCallback;
             rpcResponseCallback.Context = rpcContext;
             m_remoteResponseCallbacks.Add(remoteSession, rpcResponseCallback);
@@ -291,7 +291,7 @@ namespace SparkServer.Framework.Service.ClusterClient
             NetworkPacketQueue.GetInstance().Push(networkPacket);
         }
 
-        private void RemoteResponseCallback(RPCContext context, string method, byte[] param, RPCError error)
+        private void RemoteResponseCallback(SSContext context, string method, byte[] param, RPCError error)
         {
             long connectionId = context.LongDict["ConnectionId"];
             int remoteSession = context.IntegerDict["RemoteSession"];

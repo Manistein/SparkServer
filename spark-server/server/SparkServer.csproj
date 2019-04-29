@@ -111,6 +111,7 @@
     <Compile Include="Framework\Service\Logger\LoggerService.cs" />
     <Compile Include="Framework\Service\Base\ServiceBase.cs" />
     <Compile Include="Framework\Service\ServiceSlots.cs" />
+    <Compile Include="Framework\Timer\Timer.cs" />
     <Compile Include="Framework\Utility\ConfigHelper.cs" />
     <Compile Include="Framework\Utility\LoggerHelper.cs" />
     <Compile Include="Framework\Utility\ProtoHelper.cs" />

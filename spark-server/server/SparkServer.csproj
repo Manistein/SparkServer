@@ -155,6 +155,8 @@
     <None Include="Framework\Resource\RPCProtoSchema\ClusterClient.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\ClusterServer.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\Common.sproto" />
+    <None Include="Game\Resource\Config\Boot\Test.json" />
+    <None Include="Game\Resource\Config\ClusterName.json" />
     <None Include="Game\Resource\RPCProtoSchema\BattleTaskConsumer.sproto" />
     <None Include="Game\Resource\RPCProtoSchema\BattleTaskDispatcher.sproto" />
     <None Include="Game\Tools\sprotodump\sproto2cs.bat" />

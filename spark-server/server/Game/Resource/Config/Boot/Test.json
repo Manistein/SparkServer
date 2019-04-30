@@ -1,0 +1,4 @@
+{
+    "ClusterConfig" : "../../Game/Resource/Config/ClusterName.json",
+    "ClusterName" : "battlesvr"   
+}

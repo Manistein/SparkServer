@@ -64,7 +64,7 @@ namespace SparkServer
         public static void InitBattleServices()
         {
             SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskDispatcher", "BattleDispatcher");
-            SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskConsumer");
+            // SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskConsumer");
         }
     }
 }

@@ -22,16 +22,18 @@ namespace SparkServer.Framework.Service
         MethodNotExist        = 1,
         SocketDisconnected    = 2,
         RemoteError           = 3,
+        ServiceRuntimeError   = 4,
     }
 
     // Spark Server context
     class SSContext
     {
         public Dictionary<string, int>    IntegerDict = new Dictionary<string, int>();
+        public Dictionary<string, long>   LongDict    = new Dictionary<string, long>();
         public Dictionary<string, float>  FloatDict   = new Dictionary<string, float>();
+        public Dictionary<string, double> DoubleDict  = new Dictionary<string, double>();
         public Dictionary<string, string> StringDict  = new Dictionary<string, string>();
         public Dictionary<string, bool>   BooleanDict = new Dictionary<string, bool>();
-        public Dictionary<string, long>   LongDict    = new Dictionary<string, long>();
         public Dictionary<string, object> ObjectDict  = new Dictionary<string, object>();
     }
 
@@ -121,6 +123,7 @@ namespace SparkServer.Framework.Service
             }
             catch(Exception e)
             {
+                DoError(msg.Source, msg.RPCSession, RPCError.ServiceRuntimeError, "");
                 LoggerHelper.Info(m_serviceId, e.ToString());
             }
         }

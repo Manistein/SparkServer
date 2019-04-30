@@ -368,6 +368,22 @@ namespace SparkServer.Framework.MessageQueue
             return networkPacketList;
         }
 
+        public List<byte[]> PackErrorResponse(int session, string errorText)
+        {
+            errorText = errorText.Substring(0, Math.Min(errorText.Length, MultiPart));
+
+            byte[] sessionBytes = BitConverter.GetBytes(session);
+            byte[] errorTextBytes = Encoding.ASCII.GetBytes(errorText);
+            byte[] response = new byte[errorTextBytes.Length + 5];
+            sessionBytes.CopyTo(response, 0);
+            response[4] = (byte)ResponsePacketTag.ERROR;
+            errorTextBytes.CopyTo(response, 5);
+
+            List<byte[]> byteList = new List<byte[]>();
+            byteList.Add(response);
+            return byteList;
+        }
+
         public SkynetClusterResponse UnpackSkynetResponse(byte[] msg)
         {
             SkynetClusterResponse response = null;

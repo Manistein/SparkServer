@@ -108,6 +108,20 @@ namespace SparkServer.Framework.Service.ClusterServer
             }
             else
             {
+                NetSprotoType.Error.response errorResponse = new NetSprotoType.Error.response(param);
+                int remoteSession = context.IntegerDict["RemoteSession"];
+                long connectionId = context.LongDict["ConnectionId"];
+
+                List<byte[]> bufferList = m_skynetPacketManager.PackErrorResponse(remoteSession, errorResponse.errorText);
+
+                NetworkPacket rpcMessage = new NetworkPacket();
+                rpcMessage.Type = SocketMessageType.DATA;
+                rpcMessage.TcpObjectId = m_tcpObjectId;
+                rpcMessage.Buffers = bufferList;
+                rpcMessage.ConnectionId = connectionId;
+
+                NetworkPacketQueue.GetInstance().Push(rpcMessage);
+
                 LoggerHelper.Info(m_serviceId, 
                     string.Format("Service:ClusterServer Method:TransferCallback errorCode:{0} errorText:{1}", (int)error, Encoding.ASCII.GetString(param)));
             }

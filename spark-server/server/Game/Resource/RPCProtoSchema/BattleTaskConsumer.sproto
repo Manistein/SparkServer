@@ -1,0 +1,9 @@
+.BattleTaskConsumer_OnBattleRequest {
+    method 0 : string
+    param  1 : string
+}
+
+.BattleTaskConsumer_OnBattleRequestResponse {
+    method 0 : string
+    param  1 : string
+}

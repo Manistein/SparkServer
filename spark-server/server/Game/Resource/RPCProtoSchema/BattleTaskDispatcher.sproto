@@ -1,0 +1,9 @@
+.BattleTaskDispatcher_OnBattleRequest {
+    method 0 : string
+    param  1 : string
+}
+
+.BattleTaskDispatcher_OnBattleRequestResponse {
+    method 0 : string
+    param  1 : string
+}

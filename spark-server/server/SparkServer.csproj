@@ -125,6 +125,11 @@
     <Compile Include="Framework\Network\TCPServer.cs" />
     <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
     <Compile Include="Framework\Utility\SparkServer.cs" />
+    <Compile Include="Game\Resource\RPCProtoCS\BattleTaskConsumer.cs" />
+    <Compile Include="Game\Resource\RPCProtoCS\BattleTaskDispatcher.cs" />
+    <Compile Include="Game\Service\BattleTaskConsumer.cs" />
+    <Compile Include="Game\Service\BattleTaskDispatcher.cs" />
+    <Compile Include="Game\Service\TestSender.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -145,9 +150,26 @@
     <None Include="Framework\3rd\sproto\gen_example\TestMap.sproto" />
     <None Include="Framework\3rd\sproto\gen_example\TestRpc.sproto" />
     <None Include="Framework\3rd\sproto\README.md" />
+    <None Include="Framework\Resource\Config\Boot\Test.json" />
+    <None Include="Framework\Resource\Config\ClusterName.json" />
     <None Include="Framework\Resource\RPCProtoSchema\ClusterClient.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\ClusterServer.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\Common.sproto" />
+    <None Include="Game\Resource\RPCProtoSchema\BattleTaskConsumer.sproto" />
+    <None Include="Game\Resource\RPCProtoSchema\BattleTaskDispatcher.sproto" />
+    <None Include="Game\Tools\sprotodump\sproto2cs.bat" />
+    <None Include="Game\Tools\sprotodump\sproto2cs.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\core.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\module\cSharp.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\module\go.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\module\md.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\module\spb.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\module\table.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\param.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\README.md" />
+    <None Include="Game\Tools\sprotodump\sprotodump\serpent.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\sprotodump.lua" />
+    <None Include="Game\Tools\sprotodump\sprotodump\util.lua" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -168,8 +190,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Framework\3rd\sproto\tools\" />
-    <Folder Include="Framework\Resource\Config\" />
-    <Folder Include="Game\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

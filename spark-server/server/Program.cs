@@ -7,6 +7,7 @@ using SparkServer.Network;
 using SparkServer.Examples;
 using SparkServer.Framework;
 using SparkServer.TestUtil;
+using SparkServer.Framework.Utility;
 
 namespace SparkServer
 {
@@ -62,7 +63,8 @@ namespace SparkServer
 
         public static void InitBattleServices()
         {
-
+            SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskDispatcher", "BattleDispatcher");
+            SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskConsumer");
         }
     }
 }

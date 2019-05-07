@@ -68,14 +68,14 @@ namespace SparkServer.Framework.Service
         public MessageType Type { get; set; }
     }
 
-    class ServiceBase
+    class ServiceContext
     {
         private Queue<Message> m_messageQueue = new Queue<Message>();
         private SpinLock m_spinlock = new SpinLock();
         private bool m_isInGlobal = false;
 
         protected int m_loggerId = 0;
-        protected int m_serviceId = 0;
+        protected int m_serviceAddress = 0;
         protected int m_totalServiceSession = 0;
 
         private Dictionary<string, Method> m_serviceMethods = new Dictionary<string, Method>();
@@ -124,7 +124,7 @@ namespace SparkServer.Framework.Service
             catch(Exception e)
             {
                 DoError(msg.Source, msg.RPCSession, RPCError.ServiceRuntimeError, "");
-                LoggerHelper.Info(m_serviceId, e.ToString());
+                LoggerHelper.Info(m_serviceAddress, e.ToString());
             }
         }
 
@@ -138,8 +138,8 @@ namespace SparkServer.Framework.Service
             }
             else
             {
-                string text = string.Format("Service:{0} has not method {1}", m_serviceId, msg.Method);
-                LoggerHelper.Info(m_serviceId, text);
+                string text = string.Format("Service:{0} has not method {1}", m_serviceAddress, msg.Method);
+                LoggerHelper.Info(m_serviceAddress, text);
                 DoError(msg.Source, msg.RPCSession, RPCError.MethodNotExist, text);
             }
         }
@@ -155,7 +155,7 @@ namespace SparkServer.Framework.Service
             }
             else
             {
-                LoggerHelper.Info(m_serviceId, string.Format("Service:{0} session:{1} has not response", m_serviceId, msg.RPCSession));
+                LoggerHelper.Info(m_serviceAddress, string.Format("Service:{0} session:{1} has not response", m_serviceAddress, msg.RPCSession));
             }
         }
 
@@ -174,8 +174,8 @@ namespace SparkServer.Framework.Service
             }
             else
             {
-                LoggerHelper.Info(m_serviceId, string.Format("Service:{0} session:{1} get error:{2}; error text is {3}", 
-                    m_serviceId, msg.RPCSession, sprotoError.errorCode, sprotoError.errorText));
+                LoggerHelper.Info(m_serviceAddress, string.Format("Service:{0} session:{1} get error:{2}; error text is {3}", 
+                    m_serviceAddress, msg.RPCSession, sprotoError.errorCode, sprotoError.errorText));
             }
         }
 
@@ -200,14 +200,14 @@ namespace SparkServer.Framework.Service
         private void PushToService(int destination, string method, byte[] param, MessageType type, int session)
         {
             Message msg = new Message();
-            msg.Source = m_serviceId;
+            msg.Source = m_serviceAddress;
             msg.Destination = destination;
             msg.Method = method;
             msg.Data = param;
             msg.RPCSession = session;
             msg.Type = type;
 
-            ServiceBase targetService = ServiceSlots.GetInstance().Get(destination);
+            ServiceContext targetService = ServiceSlots.GetInstance().Get(destination);
             targetService.Push(msg);
         }
 
@@ -305,7 +305,7 @@ namespace SparkServer.Framework.Service
                 }
 
                 SSTimerNode timerNode = new SSTimerNode();
-                timerNode.Opaque = m_serviceId;
+                timerNode.Opaque = m_serviceAddress;
                 timerNode.Session = ++m_totalServiceSession;
                 timerNode.TimeoutTimestamp = timestamp + timeout;
 
@@ -351,7 +351,7 @@ namespace SparkServer.Framework.Service
                 m_messageQueue.Enqueue(msg);
                 if (!m_isInGlobal)
                 {
-                    GlobalMQ.GetInstance().Push(m_serviceId);
+                    GlobalMQ.GetInstance().Push(m_serviceAddress);
                     m_isInGlobal = true;
                 }
             }
@@ -364,12 +364,12 @@ namespace SparkServer.Framework.Service
 
         public void SetId(int id)
         {
-            m_serviceId = id;
+            m_serviceAddress = id;
         }
 
         public int GetId()
         {
-            return m_serviceId;
+            return m_serviceAddress;
         }
     }
 }

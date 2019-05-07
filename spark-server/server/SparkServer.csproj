@@ -109,7 +109,7 @@
     <Compile Include="Framework\Service\ClusterClient\ClusterClient.cs" />
     <Compile Include="Framework\Service\ClusterServer\ClusterServer.cs" />
     <Compile Include="Framework\Service\Logger\LoggerService.cs" />
-    <Compile Include="Framework\Service\Base\ServiceBase.cs" />
+    <Compile Include="Framework\Service\Base\ServiceContext.cs" />
     <Compile Include="Framework\Service\ServiceSlots.cs" />
     <Compile Include="Framework\Timer\Timer.cs" />
     <Compile Include="Framework\Utility\ConfigHelper.cs" />

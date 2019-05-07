@@ -9,7 +9,7 @@ using NetSprotoType;
 
 namespace SparkServer.Game.Service
 {
-    class BattleTaskDispatcher : ServiceBase
+    class BattleTaskDispatcher : ServiceContext
     {
         private int m_index = 0;
         private List<int> m_consumerList = new List<int>();

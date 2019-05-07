@@ -13,7 +13,7 @@ namespace SparkServer.Framework.Service
         private static ServiceSlots m_instance;
         private static ReaderWriterLock rwlock = new ReaderWriterLock();
 
-        private ServiceBase[] m_slots;
+        private ServiceContext[] m_slots;
         private int m_handleIndex = 1;
         private const int DefaultServiceSize = 8;
 
@@ -30,7 +30,7 @@ namespace SparkServer.Framework.Service
             return m_instance;
         }
 
-        public int Add(ServiceBase service)
+        public int Add(ServiceContext service)
         {
             if (service.GetId() > 0)
             {
@@ -45,7 +45,7 @@ namespace SparkServer.Framework.Service
                 {
                     if (m_slots == null)
                     {
-                        m_slots = new ServiceBase[DefaultServiceSize];
+                        m_slots = new ServiceContext[DefaultServiceSize];
                     }
 
                     bool isFind = false;
@@ -79,10 +79,10 @@ namespace SparkServer.Framework.Service
                         {
                             int oldSize = m_slots.Length;
                             int newSize = m_slots.Length * 2;
-                            ServiceBase[] newSlots = new ServiceBase[newSize];
+                            ServiceContext[] newSlots = new ServiceContext[newSize];
                             for (int i = 0; i < m_slots.Length; i ++)
                             {
-                                ServiceBase slotService = m_slots[i];
+                                ServiceContext slotService = m_slots[i];
                                 int hash = slotService.GetId() & (newSize - 1);
                                 newSlots[hash] = slotService;
                             }
@@ -105,9 +105,9 @@ namespace SparkServer.Framework.Service
             return result;
         }
 
-        public ServiceBase Get(int serviceId)
+        public ServiceContext Get(int serviceId)
         {
-            ServiceBase s = null;
+            ServiceContext s = null;
 
             try
             {
@@ -115,7 +115,7 @@ namespace SparkServer.Framework.Service
                 try
                 {
                     int hash = serviceId & (m_slots.Length - 1);
-                    ServiceBase slot = m_slots[hash];
+                    ServiceContext slot = m_slots[hash];
                     if (slot.GetId() == serviceId)
                     {
                         s = slot;
@@ -134,7 +134,7 @@ namespace SparkServer.Framework.Service
             return s;
         }
 
-        public ServiceBase Get(string name)
+        public ServiceContext Get(string name)
         {
             int serviceId = 0;
             m_service2name.TryGetValue(name, out serviceId);
@@ -143,7 +143,7 @@ namespace SparkServer.Framework.Service
 
         public void Name(int serviceId, string name)
         {
-            ServiceBase s = Get(serviceId);
+            ServiceContext s = Get(serviceId);
             if (s != null)
             {
                 m_service2name.TryAdd(name, serviceId);

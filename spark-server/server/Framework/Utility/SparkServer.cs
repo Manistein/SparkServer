@@ -14,7 +14,7 @@ namespace SparkServer.Framework.Utility
             Type type = Type.GetType(serviceClass);
             object obj = Activator.CreateInstance(type);
 
-            ServiceBase service = obj as ServiceBase;
+            ServiceContext service = obj as ServiceContext;
             service.Init();
 
             ServiceSlots.GetInstance().Add(service);

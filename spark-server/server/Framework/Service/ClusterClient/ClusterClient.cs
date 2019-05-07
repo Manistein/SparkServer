@@ -24,7 +24,7 @@ namespace SparkServer.Framework.Service.ClusterClient
         public int Session { get; set; }
     }
 
-    class ClusterClient : ServiceBase
+    class ClusterClient : ServiceContext
     {
         private Dictionary<string, long> m_node2conn = new Dictionary<string, long>();
         private Dictionary<string, Queue<WaitForSendRequest>> m_waitForSendRequests = new Dictionary<string, Queue<WaitForSendRequest>>();
@@ -73,7 +73,7 @@ namespace SparkServer.Framework.Service.ClusterClient
             }
             else
             {
-                LoggerHelper.Info(m_serviceId, string.Format("ClusterClient unknow socket method:{0}", msg.Method));
+                LoggerHelper.Info(m_serviceAddress, string.Format("ClusterClient unknow socket method:{0}", msg.Method));
             }
         }
 
@@ -191,7 +191,7 @@ namespace SparkServer.Framework.Service.ClusterClient
             }
             else
             {
-                LoggerHelper.Info(m_serviceId, string.Format("ClusterServer SocketData unknow remoteSession:{0}", remoteSession));
+                LoggerHelper.Info(m_serviceAddress, string.Format("ClusterServer SocketData unknow remoteSession:{0}", remoteSession));
             }
         }
 

@@ -9,7 +9,7 @@ using NLog.Targets;
 
 namespace SparkServer.Framework.Service.Logger
 {
-    class LoggerService : ServiceBase
+    class LoggerService : ServiceContext
     {
         private NLog.Logger m_logger; // = LogManager.GetCurrentClassLogger();
 

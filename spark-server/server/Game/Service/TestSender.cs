@@ -8,7 +8,7 @@ using NetSprotoType;
 
 namespace SparkServer.Game.Service
 {
-    class TestSender : ServiceBase
+    class TestSender : ServiceContext
     {
         public override void Init()
         {

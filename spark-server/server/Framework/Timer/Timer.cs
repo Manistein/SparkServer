@@ -50,7 +50,7 @@ namespace SparkServer.Framework.Timer
                         msg.RPCSession = timerNode.Session;
                         msg.Type = MessageType.Timer;
 
-                        ServiceBase service = ServiceSlots.GetInstance().Get(timerNode.Opaque);
+                        ServiceContext service = ServiceSlots.GetInstance().Get(timerNode.Opaque);
                         service.Push(msg);
                     }
                     else

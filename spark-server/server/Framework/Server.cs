@@ -137,7 +137,7 @@ namespace SparkServer.Framework
                 }
                 else
                 {
-                    ServiceBase service = m_serviceSlots.Get(serviceId);
+                    ServiceContext service = m_serviceSlots.Get(serviceId);
                     Message msg = service.Pop();
                     if (msg != null)
                     {
@@ -172,7 +172,7 @@ namespace SparkServer.Framework
             msg.RPCSession = 0;
             msg.Type = MessageType.Socket;
 
-            ServiceBase service = ServiceSlots.GetInstance().Get(opaque);
+            ServiceContext service = ServiceSlots.GetInstance().Get(opaque);
             service.Push(msg);
         }
 
@@ -190,7 +190,7 @@ namespace SparkServer.Framework
             msg.RPCSession = 0;
             msg.Type = MessageType.Socket;
 
-            ServiceBase service = ServiceSlots.GetInstance().Get(opaque);
+            ServiceContext service = ServiceSlots.GetInstance().Get(opaque);
             service.Push(msg);
         }
 
@@ -209,7 +209,7 @@ namespace SparkServer.Framework
             msg.RPCSession = 0;
             msg.Type = MessageType.Socket;
 
-            ServiceBase service = ServiceSlots.GetInstance().Get(opaque);
+            ServiceContext service = ServiceSlots.GetInstance().Get(opaque);
             service.Push(msg);
         }
 
@@ -228,7 +228,7 @@ namespace SparkServer.Framework
             msg.RPCSession = 0;
             msg.Type = MessageType.Socket;
 
-            ServiceBase service = ServiceSlots.GetInstance().Get(opaque);
+            ServiceContext service = ServiceSlots.GetInstance().Get(opaque);
             service.Push(msg);
         }
 

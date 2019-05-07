@@ -10,7 +10,7 @@ using static NetProtocol;
 
 namespace SparkServer.Framework.Service.ClusterServer
 {
-    class ClusterServer : ServiceBase
+    class ClusterServer : ServiceContext
     {
         private int m_tcpObjectId = 0;
         private SkynetPacketManager m_skynetPacketManager = new SkynetPacketManager();
@@ -42,21 +42,21 @@ namespace SparkServer.Framework.Service.ClusterServer
             }
             else
             {
-                LoggerHelper.Info(m_serviceId, string.Format("Unknow socket command {0}", msg.Method));
+                LoggerHelper.Info(m_serviceAddress, string.Format("Unknow socket command {0}", msg.Method));
             }
         }
 
         private void SocketAccept(int source, int session, string method, byte[] param)
         {
             NetSprotoType.ClusterServerSocketAccept accept = new NetSprotoType.ClusterServerSocketAccept(param);
-            LoggerHelper.Info(m_serviceId, 
+            LoggerHelper.Info(m_serviceAddress, 
                 string.Format("ClusterServer accept new connection {ip = {0}, port = {1}, connection = {2}}", accept.ip, accept.port, accept.connection));
         }
 
         private void SocketError(int source, int session, string method, byte[] param)
         {
             NetSprotoType.SocketError error = new NetSprotoType.SocketError(param);
-            LoggerHelper.Info(m_serviceId,
+            LoggerHelper.Info(m_serviceAddress,
                 string.Format("ClusterServer socket error connection:{0} errorCode:{1} errorText:{2}", error.connection, error.errorCode, error.errorText));
         }
 
@@ -122,7 +122,7 @@ namespace SparkServer.Framework.Service.ClusterServer
 
                 NetworkPacketQueue.GetInstance().Push(rpcMessage);
 
-                LoggerHelper.Info(m_serviceId, 
+                LoggerHelper.Info(m_serviceAddress, 
                     string.Format("Service:ClusterServer Method:TransferCallback errorCode:{0} errorText:{1}", (int)error, Encoding.ASCII.GetString(param)));
             }
         }

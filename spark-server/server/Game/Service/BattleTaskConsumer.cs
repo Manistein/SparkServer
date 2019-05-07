@@ -9,7 +9,7 @@ using SparkServer.Framework.Utility;
 
 namespace SparkServer.Game.Service
 {
-    class BattleTaskConsumer : ServiceBase
+    class BattleTaskConsumer : ServiceContext
     {
         public override void Init()
         {
@@ -23,7 +23,7 @@ namespace SparkServer.Game.Service
             BattleTaskConsumer_OnBattleRequest request = new BattleTaskConsumer_OnBattleRequest(param);
 
             // TODO Logic
-            LoggerHelper.Info(m_serviceId, request.param);
+            LoggerHelper.Info(m_serviceAddress, request.param);
 
             BattleTaskConsumer_OnBattleRequestResponse response = new BattleTaskConsumer_OnBattleRequestResponse();
             response.method = "OnBattleRequest";

@@ -774,6 +774,7 @@ namespace SparkServer.Framework.MessageQueue
                         if (!isSuccess)
                         {
                             LoggerHelper.Info(m_sourceId, String.Format("SkynetPacketManager.UnpackLargePacket illegal FRAGMENT {0}", session));
+                            return null;
                         }
                         largeRequest.Messages.Add(skynetMessage);
 

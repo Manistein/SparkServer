@@ -101,13 +101,13 @@
     <Compile Include="Framework\MessageQueue\GlobalMQ.cs" />
     <Compile Include="Framework\MessageQueue\NetworkPacketQueue.cs" />
     <Compile Include="Framework\Resource\RPCProtoCS\ClusterClient.cs" />
-    <Compile Include="Framework\Resource\RPCProtoCS\ClusterServer.cs" />
     <Compile Include="Framework\Resource\RPCProtoCS\Common.cs" />
     <Compile Include="Framework\Resource\RPCProtoCS\NetProtocol.cs" />
     <Compile Include="Framework\Server.cs" />
     <Compile Include="Framework\MessageQueue\SkynetPacketManager.cs" />
     <Compile Include="Framework\Service\ClusterClient\ClusterClient.cs" />
     <Compile Include="Framework\Service\ClusterServer\ClusterServer.cs" />
+    <Compile Include="Framework\Service\Gateway\Gateway.cs" />
     <Compile Include="Framework\Service\Logger\LoggerService.cs" />
     <Compile Include="Framework\Service\Base\ServiceContext.cs" />
     <Compile Include="Framework\Service\ServiceSlots.cs" />
@@ -153,7 +153,6 @@
     <None Include="Framework\Resource\Config\Boot\Test.json" />
     <None Include="Framework\Resource\Config\ClusterName.json" />
     <None Include="Framework\Resource\RPCProtoSchema\ClusterClient.sproto" />
-    <None Include="Framework\Resource\RPCProtoSchema\ClusterServer.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\Common.sproto" />
     <None Include="Game\Resource\Config\Boot\Test.json" />
     <None Include="Game\Resource\Config\ClusterName.json" />

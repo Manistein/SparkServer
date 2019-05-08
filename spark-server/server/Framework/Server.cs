@@ -21,7 +21,7 @@ namespace SparkServer.Framework
 
     class Server
     {
-        JObject m_bootConfig = new JObject();
+        JObject m_bootConfig;
 
         private int m_workerNum = 8;
 
@@ -48,34 +48,23 @@ namespace SparkServer.Framework
             string bootConfigText = ConfigHelper.LoadFromFile(bootPath);
             m_bootConfig = JObject.Parse(bootConfigText);
 
-            string clusterNamePath = m_bootConfig["ClusterConfig"].ToString();
-            string clusterNameText = ConfigHelper.LoadFromFile(clusterNamePath);
-            JObject clusterConfig = JObject.Parse(clusterNameText);
+            if (m_bootConfig.ContainsKey("ClusterConfig"))
+            {
+                string clusterNamePath = m_bootConfig["ClusterConfig"].ToString();
+                string clusterNameText = ConfigHelper.LoadFromFile(clusterNamePath);
+                JObject clusterConfig = JObject.Parse(clusterNameText);
 
-            string clusterName = m_bootConfig["ClusterName"].ToString();
-            string ipEndpoint = clusterConfig[clusterName].ToString();
+                string clusterName = m_bootConfig["ClusterName"].ToString();
+                string ipEndpoint = clusterConfig[clusterName].ToString();
 
-            string[] ipResult = ipEndpoint.Split(':');
-            m_clusterServerIp = ipResult[0];
-            m_clusterServerPort = Int32.Parse(ipResult[1]);
+                string[] ipResult = ipEndpoint.Split(':');
+                m_clusterServerIp = ipResult[0];
+                m_clusterServerPort = Int32.Parse(ipResult[1]);
+            }
         }
 
-        private void Boot(BootServices customBoot)
+        private void InitCluster()
         {
-            // create global instance first
-            m_globalMQ = GlobalMQ.GetInstance();
-            m_serviceSlots = ServiceSlots.GetInstance();
-            m_netpackQueue = NetworkPacketQueue.GetInstance();
-            m_timer = SSTimer.GetInstance();
-
-            NetProtocol.GetInstance();
-
-            // create logger service second
-            LoggerService loggerService = new LoggerService();
-            loggerService.Init();
-            m_serviceSlots.Add(loggerService);
-            m_serviceSlots.Name(loggerService.GetId(), "logger");
-
             ClusterServer clusterServer = new ClusterServer();
             clusterServer.Init();
             m_serviceSlots.Add(clusterServer);
@@ -98,6 +87,28 @@ namespace SparkServer.Framework
 
             clusterServer.SetTCPObjectId(m_clusterTCPServer.GetObjectId());
             clusterClient.SetTCPObjectId(m_clusterTCPClient.GetObjectId());
+        }
+
+        private void Boot(BootServices customBoot)
+        {
+            // create global instance first
+            m_globalMQ = GlobalMQ.GetInstance();
+            m_serviceSlots = ServiceSlots.GetInstance();
+            m_netpackQueue = NetworkPacketQueue.GetInstance();
+            m_timer = SSTimer.GetInstance();
+
+            NetProtocol.GetInstance();
+
+            // create logger service second
+            LoggerService loggerService = new LoggerService();
+            loggerService.Init();
+            m_serviceSlots.Add(loggerService);
+            m_serviceSlots.Name(loggerService.GetId(), "logger");
+
+            if(m_bootConfig.ContainsKey("ClusterConfig"))
+            {
+                InitCluster();
+            }
 
             customBoot();
 
@@ -115,10 +126,14 @@ namespace SparkServer.Framework
 
         private void Loop()
         {
+            bool isInitCluster = m_bootConfig.ContainsKey("ClusterConfig");
             while (true)
             {
-                m_clusterTCPServer.Loop();
-                m_clusterTCPClient.Loop();
+                if (isInitCluster)
+                {
+                    m_clusterTCPServer.Loop();
+                    m_clusterTCPClient.Loop();
+                }
 
                 ProcessOutbound();
 
@@ -196,7 +211,7 @@ namespace SparkServer.Framework
 
         private void OnAcceptComplete(int opaque, long sessionId, string ip, int port)
         {
-            ClusterServerSocketAccept accept = new ClusterServerSocketAccept();
+            SocketAccept accept = new SocketAccept();
             accept.connection = sessionId;
             accept.ip = ip;
             accept.port = port;

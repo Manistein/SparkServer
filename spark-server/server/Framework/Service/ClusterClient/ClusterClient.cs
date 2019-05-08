@@ -14,8 +14,8 @@ namespace SparkServer.Framework.Service.ClusterClient
     {
         public int Source { get; set; }
         public int Session { get; set; }
-        public string method { get; set; }
-        public ClusterClientRequest request { get; set; }
+        public string Method { get; set; }
+        public ClusterClientRequest Request { get; set; }
     }
 
     class WaitForResponseRequest
@@ -98,7 +98,7 @@ namespace SparkServer.Framework.Service.ClusterClient
                 for (int i = 0; i < count; i ++)
                 {
                     WaitForSendRequest request = waitQueue.Dequeue();
-                    RemoteRequest(request.Source, request.method, request.request, socketConnected.connection, request.Session);
+                    RemoteRequest(request.Source, request.Method, request.Request, socketConnected.connection, request.Session);
                 }
                 m_waitForSendRequests.Remove(ipEndpoint);
             }
@@ -153,7 +153,7 @@ namespace SparkServer.Framework.Service.ClusterClient
                     for (int i = 0; i < count; i++)
                     {
                         WaitForSendRequest req = waitQueue.Dequeue();
-                        DoError(req.Source, req.Session, RPCError.SocketDisconnected, string.Format("RemoteCall {0} failure", req.method));
+                        DoError(req.Source, req.Session, RPCError.SocketDisconnected, string.Format("RemoteCall {0} failure", req.Method));
                     }
 
                     m_waitForSendRequests.Remove(ipEndpoint);
@@ -241,8 +241,8 @@ namespace SparkServer.Framework.Service.ClusterClient
             WaitForSendRequest waitRequest = new WaitForSendRequest();
             waitRequest.Source = source;
             waitRequest.Session = session;
-            waitRequest.method = method;
-            waitRequest.request = request;
+            waitRequest.Method = method;
+            waitRequest.Request = request;
 
             waittingQueue.Enqueue(waitRequest);
         }

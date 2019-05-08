@@ -1,3 +1,9 @@
+.SocketAccept {
+    connection 0 : integer
+    ip         1 : string
+    port       2 : integer
+}
+
 .SocketError {
     connection 0 : integer
     errorCode  1 : integer

@@ -23,6 +23,8 @@ namespace SparkServer.Framework.Utility
                 ServiceSlots.GetInstance().Name(service.GetId(), serviceName);
             }
 
+            LoggerHelper.Info(service.GetId(), string.Format("{0} launched", serviceName));
+
             return service.GetId();
         }
     }

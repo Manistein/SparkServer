@@ -48,7 +48,7 @@ namespace SparkServer.Framework.Service.ClusterServer
 
         private void SocketAccept(int source, int session, string method, byte[] param)
         {
-            NetSprotoType.ClusterServerSocketAccept accept = new NetSprotoType.ClusterServerSocketAccept(param);
+            NetSprotoType.SocketAccept accept = new NetSprotoType.SocketAccept(param);
             LoggerHelper.Info(m_serviceAddress, 
                 string.Format("ClusterServer accept new connection {ip = {0}, port = {1}, connection = {2}}", accept.ip, accept.port, accept.connection));
         }

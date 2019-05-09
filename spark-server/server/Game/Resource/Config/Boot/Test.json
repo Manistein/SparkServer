@@ -1,4 +1,5 @@
 {
     "ClusterConfig" : "../../Game/Resource/Config/ClusterName.json",
-    "ClusterName" : "battlesvr"   
+    "ClusterName" : "battlesvr",
+    "Gateway" : "127.0.0.1:8001"   
 }

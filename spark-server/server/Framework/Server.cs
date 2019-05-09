@@ -14,6 +14,7 @@ using SparkServer.Framework.Service.ClusterClient;
 using NetSprotoType;
 using Newtonsoft.Json.Linq;
 using SparkServer.Framework.Timer;
+using SparkServer.Framework.Service.Gateway;
 
 namespace SparkServer.Framework
 {
@@ -27,9 +28,15 @@ namespace SparkServer.Framework
 
         private string m_clusterServerIp;
         private int m_clusterServerPort = 0;
+        private string m_gateIp;
+        private int m_gatePort = 0;
+
         private TCPServer m_clusterTCPServer;
         private TCPClient m_clusterTCPClient;
+        private TCPServer m_tcpGate;
         private TCPObjectContainer m_tcpObjectContainer;
+
+        private Gateway m_gateway;
 
         private GlobalMQ m_globalMQ;
         private ServiceSlots m_serviceSlots;
@@ -41,6 +48,18 @@ namespace SparkServer.Framework
             InitConfig(bootPath);
             Boot(customBoot);
             Loop();
+        }
+
+        public void RegisterGateway(Gateway gateway, string name)
+        {
+            if (gateway.GetId() != 0)
+            {
+                return;
+            }
+
+            m_gateway = gateway;
+            m_serviceSlots.Add(gateway);
+            m_serviceSlots.Name(gateway.GetId(), name);
         }
 
         private void InitConfig(string bootPath)
@@ -61,6 +80,14 @@ namespace SparkServer.Framework
                 m_clusterServerIp = ipResult[0];
                 m_clusterServerPort = Int32.Parse(ipResult[1]);
             }
+
+            if (m_bootConfig.ContainsKey("Gateway"))
+            {
+                string gatewayEndpoint = m_bootConfig["Gateway"].ToString();
+                string[] ipResult = gatewayEndpoint.Split(':');
+                m_gateIp = ipResult[0];
+                m_gatePort = Int32.Parse(ipResult[1]);
+            }
         }
 
         private void InitCluster()
@@ -76,7 +103,6 @@ namespace SparkServer.Framework
             clusterClient.ParseClusterConfig(m_bootConfig["ClusterConfig"].ToString());
             m_serviceSlots.Name(clusterClient.GetId(), "clusterClient");
 
-            m_tcpObjectContainer = new TCPObjectContainer();
             m_clusterTCPServer = new TCPServer();
             m_clusterTCPServer.Start(m_clusterServerIp, m_clusterServerPort, 30, clusterServer.GetId(), OnSessionError, OnReadPacketComplete, OnAcceptComplete);
             m_tcpObjectContainer.Add(m_clusterTCPServer);
@@ -87,6 +113,15 @@ namespace SparkServer.Framework
 
             clusterServer.SetTCPObjectId(m_clusterTCPServer.GetObjectId());
             clusterClient.SetTCPObjectId(m_clusterTCPClient.GetObjectId());
+        }
+
+        private void InitGateway()
+        {
+            m_tcpGate = new TCPServer();
+            m_tcpGate.Start(m_gateIp, m_gatePort, 30, m_gateway.GetId(), OnSessionError, OnReadPacketComplete, OnAcceptComplete);
+            m_tcpObjectContainer.Add(m_tcpGate);
+
+            m_gateway.SetTCPObjectId(m_tcpGate.GetObjectId());
         }
 
         private void Boot(BootServices customBoot)
@@ -105,9 +140,15 @@ namespace SparkServer.Framework
             m_serviceSlots.Add(loggerService);
             m_serviceSlots.Name(loggerService.GetId(), "logger");
 
-            if(m_bootConfig.ContainsKey("ClusterConfig"))
+            m_tcpObjectContainer = new TCPObjectContainer();
+            if (m_bootConfig.ContainsKey("ClusterConfig"))
             {
                 InitCluster();
+            }
+
+            if (m_bootConfig.ContainsKey("Gateway"))
+            {
+                InitGateway();
             }
 
             customBoot();
@@ -127,12 +168,18 @@ namespace SparkServer.Framework
         private void Loop()
         {
             bool isInitCluster = m_bootConfig.ContainsKey("ClusterConfig");
+            bool isInitGateway = m_bootConfig.ContainsKey("Gateway");
             while (true)
             {
                 if (isInitCluster)
                 {
                     m_clusterTCPServer.Loop();
                     m_clusterTCPClient.Loop();
+                }
+
+                if (isInitGateway)
+                {
+                    m_tcpGate.Loop();
                 }
 
                 ProcessOutbound();

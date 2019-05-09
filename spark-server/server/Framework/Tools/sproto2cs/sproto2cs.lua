@@ -1,12 +1,9 @@
 local lfs = require "lfs"
 
-local sproto_path = "..\\..\\Resource\\RPCProtoSchema\\"
+-- local sproto_path = "..\\..\\Resource\\RPCProtoSchema\\"
+-- local dump_cs_path = "..\\..\\Resource\\RPCProtoCS\\"
 
-local dump_cs_path = "..\\..\\Resource\\RPCProtoCS\\"
-
-local lua_exe_path = ".\\lib\\lua.exe"
-
-
+local sproto_path, dump_cs_path = ...
 
 local function is_sproto_file(file_name)
 	return string.match(file_name, ".sproto") == ".sproto"
@@ -19,8 +16,7 @@ local function main()
 			sproto_file_list = sproto_file_list .. " " .. sproto_path ..file_name
 		end
 	end
-	os.execute(lua_exe_path .. " .\\sprotodump\\sprotodump.lua -cs " .. sproto_file_list .. " -d " .. dump_cs_path .. " -p Net")
+	os.execute("lua.exe ..\\sprotodump\\sprotodump.lua -cs " .. sproto_file_list .. " -d " .. dump_cs_path .. " -p Net")
 end
-
 
 main()

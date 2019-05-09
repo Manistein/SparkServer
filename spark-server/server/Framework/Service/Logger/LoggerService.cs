@@ -15,13 +15,16 @@ namespace SparkServer.Framework.Service.Logger
 
         public override void Init()
         {
-            // 配置参见 https://github.com/nlog/nlog/wiki/Configuration-API
-
             base.Init();
+        }
+
+        public void Startup(string loggerPath)
+        {
+            // 配置参见 https://github.com/nlog/nlog/wiki/Configuration-API
 
             var config = new LoggingConfiguration();
 
-            var logRoot = "../";
+            var logRoot = loggerPath;
 
             var filePrefix = "battle_1_";
 

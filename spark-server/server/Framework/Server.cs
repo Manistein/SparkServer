@@ -15,6 +15,7 @@ using NetSprotoType;
 using Newtonsoft.Json.Linq;
 using SparkServer.Framework.Timer;
 using SparkServer.Framework.Service.Gateway;
+using System.IO;
 
 namespace SparkServer.Framework
 {
@@ -137,6 +138,16 @@ namespace SparkServer.Framework
             // create logger service second
             LoggerService loggerService = new LoggerService();
             loggerService.Init();
+
+            if (m_bootConfig.ContainsKey("Logger") && Directory.Exists(m_bootConfig["Logger"].ToString()))
+            {
+                loggerService.Startup(m_bootConfig["Logger"].ToString());
+            }
+            else
+            {
+                loggerService.Startup("../");
+            }
+
             m_serviceSlots.Add(loggerService);
             m_serviceSlots.Name(loggerService.GetId(), "logger");
 

@@ -1,5 +1,6 @@
 {
     "ClusterConfig" : "../../Game/Resource/Config/ClusterName.json",
     "ClusterName" : "battlesvr",
-    "Gateway" : "127.0.0.1:8001"   
+    "Gateway" : "127.0.0.1:8001",
+    "Logger" : "/home/logs/runtime/battle"   
 }

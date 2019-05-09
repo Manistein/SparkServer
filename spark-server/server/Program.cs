@@ -8,6 +8,7 @@ using SparkServer.Examples;
 using SparkServer.Framework;
 using SparkServer.TestUtil;
 using SparkServer.Framework.Utility;
+using SparkServer.Test;
 
 namespace SparkServer
 {
@@ -17,17 +18,13 @@ namespace SparkServer
         {
             string inputMode = args[0];
             int mode = 0;
-            if (inputMode == "TCPServerExample")
+            if (inputMode == "TestCases")
             {
                 mode = 1;
             }
-            else if (inputMode == "TCPClientExample")
-            {
-                mode = 2;
-            }
             else if (inputMode == "SparkServer")
             {
-                mode = 3;
+                mode = 2;
             }
             else
             {
@@ -39,15 +36,12 @@ namespace SparkServer
             {
                 case 1:
                     {
-                        TCPServerExample tcpServerExample = new TCPServerExample();
-                        tcpServerExample.Run();
-                    }break;
+                        string caseName = args[1];
+
+                        TestCases testCases = new TestCases();
+                        testCases.Run(caseName);
+                    } break;
                 case 2:
-                    {
-                        TCPClientExample tcpClientExample = new TCPClientExample();
-                        tcpClientExample.Run();
-                    }break;
-                case 3:
                     {
                         string bootPath = args[1];
 

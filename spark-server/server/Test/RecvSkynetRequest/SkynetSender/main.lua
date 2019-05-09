@@ -9,10 +9,13 @@ local cluster 	= require "cluster"
 
 skynet.start(function()
 	cluster.open("battlecli")
+    skynet.error("hello battle server ===================")
 
+    --[[
 	for i = 1, 10 do 
 		skynet.newservice("battleagent", i)
 	end 
+    ]]
 
 	skynet.exit();
 end)

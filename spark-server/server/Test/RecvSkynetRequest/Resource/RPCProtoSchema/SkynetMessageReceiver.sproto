@@ -1,0 +1,9 @@
+.SkynetMessageReceiver_OnProcessRequest {
+    request_count 0 : integer
+    request_text  1 : string
+}
+
+.SkynetMessageReceiver_OnProcessRequestResponse {
+    request_count 0 : integer
+    request_text  1 : string
+}

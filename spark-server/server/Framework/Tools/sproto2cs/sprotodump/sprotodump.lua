@@ -1,4 +1,5 @@
 package.path = package.path .. ";./sprotodump/?.lua"
+package.path = package.path .. ";../sprotodump/?.lua"
 
 local parse_core = require "core"
 local parse_param = require "param"

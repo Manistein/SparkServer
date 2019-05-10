@@ -157,7 +157,7 @@ namespace SparkServer.Framework
                 InitCluster();
             }
 
-            if (m_bootConfig.ContainsKey("Gateway"))
+            if (m_bootConfig.ContainsKey("Gateway") && m_gateway != null)
             {
                 InitGateway();
             }

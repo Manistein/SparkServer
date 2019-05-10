@@ -7,3 +7,14 @@
     request_count 0 : integer
     request_text  1 : string
 }
+
+.RPCParam {
+    method 0 : string
+    param 1 : string
+}
+
+RPC 100 {
+    request RPCParam
+    response RPCParam
+            
+}

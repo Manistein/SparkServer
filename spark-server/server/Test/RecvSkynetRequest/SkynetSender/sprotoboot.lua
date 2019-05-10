@@ -5,10 +5,13 @@
 "]]
 
 
-local sprotoparser = require "sprotoparser"
-local sprotoloader = require "sprotoloader"
+local skynet		= require "skynet"
+local sprotoparser	= require "sprotoparser"
+local sprotoloader	= require "sprotoloader"
+local sequence		= require "sequence"
+local const			= require "const"
 
-local folder_path = string.format("%s/../game/resource/proto/", framework.getenv("root"))
+local folder_path = string.format("%s/../../RecvSkynetRequest/Resource/RPCProtoSchema/", skynet.getenv("root"))
 
 local function read_file(path)
     local file_handle = assert(io.open(path))
@@ -28,7 +31,7 @@ local function read_all(seq, path)
 
     return line
 end 
-
+--[[
 local function load_c2s()
     local stream = read_all(sequence.c2s, folder_path .. "client2server/")  
     return sprotoparser.parse(stream)
@@ -38,10 +41,16 @@ local function load_s2c()
     local stream = read_all(sequence.s2c, folder_path .. "server2client/")
     return sprotoparser.parse(stream)
 end 
+]]
 
-framework.start(function()
-    sprotoloader.save(load_c2s(), const.SPROTO_LOADER_C2S)
-    sprotoloader.save(load_s2c(), const.SPROTO_LOADER_S2C)
+local function load_sproto()
+	local stream = read_all(sequence, folder_path)
+	return sprotoparser.parse(stream)
+end
+
+
+skynet.start(function()
+	sprotoloader.save(load_sproto(), const.SPROTO_LOADER_S2SS)
 
     -- don't call skynet.exit() , because sproto.core may unload and the global slot become invalid
 end)

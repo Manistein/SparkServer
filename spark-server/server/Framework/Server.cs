@@ -44,13 +44,14 @@ namespace SparkServer.Framework
         private NetworkPacketQueue m_netpackQueue;
         private SSTimer m_timer;
 
-        public void Run(string bootPath, BootServices customBoot)
+        public void Run(string bootConf, BootServices customBoot)
         {
-            InitConfig(bootPath);
+            InitConfig(bootConf);
             Boot(customBoot);
             Loop();
         }
 
+        /*
         public void RegisterGateway(Gateway gateway, string name)
         {
             if (gateway.GetId() != 0)
@@ -62,10 +63,11 @@ namespace SparkServer.Framework
             m_serviceSlots.Add(gateway);
             m_serviceSlots.Name(gateway.GetId(), name);
         }
+        */
 
-        private void InitConfig(string bootPath)
+        private void InitConfig(string bootConf)
         {
-            string bootConfigText = ConfigHelper.LoadFromFile(bootPath);
+            string bootConfigText = ConfigHelper.LoadFromFile(bootConf);
             m_bootConfig = JObject.Parse(bootConfigText);
 
             if (m_bootConfig.ContainsKey("ClusterConfig"))
@@ -84,7 +86,7 @@ namespace SparkServer.Framework
 
             if (m_bootConfig.ContainsKey("Gateway"))
             {
-                string gatewayEndpoint = m_bootConfig["Gateway"].ToString();
+                string gatewayEndpoint = m_bootConfig["Gateway"]["host"].ToString();
                 string[] ipResult = gatewayEndpoint.Split(':');
                 m_gateIp = ipResult[0];
                 m_gatePort = Int32.Parse(ipResult[1]);
@@ -118,6 +120,12 @@ namespace SparkServer.Framework
 
         private void InitGateway()
         {
+            string gatewayClass = m_bootConfig["Gateway"]["class"].ToString();
+            string gatewayName = m_bootConfig["Gateway"]["name"].ToString();
+
+            int gatewayId = SparkServerUtility.NewService(gatewayClass, gatewayName);
+            m_gateway = ServiceSlots.GetInstance().Get(gatewayId) as Gateway;
+
             m_tcpGate = new TCPServer();
             m_tcpGate.Start(m_gateIp, m_gatePort, 30, m_gateway.GetId(), OnSessionError, OnReadPacketComplete, OnAcceptComplete);
             m_tcpObjectContainer.Add(m_tcpGate);
@@ -157,7 +165,7 @@ namespace SparkServer.Framework
                 InitCluster();
             }
 
-            if (m_bootConfig.ContainsKey("Gateway") && m_gateway != null)
+            if (m_bootConfig.ContainsKey("Gateway") && m_gateway == null)
             {
                 InitGateway();
             }

@@ -123,7 +123,10 @@ namespace SparkServer.Framework.Service
             }
             catch(Exception e)
             {
-                DoError(msg.Source, msg.RPCSession, RPCError.ServiceRuntimeError, "");
+                if (msg.Source > 0 && msg.RPCSession > 0)
+                {
+                    DoError(msg.Source, msg.RPCSession, RPCError.ServiceRuntimeError, "");
+                }
                 LoggerHelper.Info(m_serviceAddress, e.ToString());
             }
         }

@@ -6,16 +6,16 @@
 
 local skynet 	= require "skynet"
 local cluster 	= require "cluster"
+local sprotoloader  = require "sprotoloader"
+local sprotocore    = require "sproto.core"
+
+local sproto_c2s = nil
+local sproto_s2c = nil
 
 skynet.start(function()
 	cluster.open("battlecli")
     skynet.error("hello battle server ===================")
-
-    --[[
-	for i = 1, 10 do 
-		skynet.newservice("battleagent", i)
-	end 
-    ]]
+    skynet.newservice("client")
 
 	skynet.exit();
 end)

@@ -9,7 +9,7 @@ namespace SparkServer.Framework.Service.Gateway
 {
     class Gateway : ServiceContext
     {
-        private Dictionary<string, Method> m_socketMethods;
+        private Dictionary<string, Method> m_socketMethods = new Dictionary<string, Method>();
         private int m_tcpObjectId = 0;
 
         public override void Init()
@@ -24,6 +24,11 @@ namespace SparkServer.Framework.Service.Gateway
         public void SetTCPObjectId(int tcpObjectId)
         {
             m_tcpObjectId = tcpObjectId;
+        }
+
+        public int GetTcpObjectId()
+        {
+            return m_tcpObjectId;
         }
 
         protected override void OnSocketCommand(Message msg)
@@ -52,7 +57,7 @@ namespace SparkServer.Framework.Service.Gateway
 
         protected virtual void SocketData(int source, int session, string method, byte[] param)
         {
-
+            
         }
 
         private void RegisterSocketMethods(string methodName, Method method)

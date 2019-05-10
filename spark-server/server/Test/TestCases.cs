@@ -17,6 +17,10 @@ namespace SparkServer.Test
         public TestCases()
         {
             RegisterTestCase("RecvSkynetRequest", TestRecvSkynetRequest);
+
+            RegisterTestCase("GatewayCase", GatewayCase);
+
+            RegisterTestCase("GatewayClientCase", GatewayClientCase);
         }
 
         public void Run(string caseName)
@@ -38,10 +42,26 @@ namespace SparkServer.Test
         {
             BootServices boot = delegate ()
             {
-                SparkServerUtility.NewService("SparkServer.Test.RecvSkynetRequest.SkynetMessageReceiver");
+                SparkServerUtility.NewService("SparkServer.Test.RecvSkynetRequest");
             };
             Server server = new Server();
             server.Run("../../Test/RecvSkynetRequest/Resource/Config/Startup.json", boot);
+        }
+
+        private void GatewayCase()
+        {
+            BootServices boot = delegate ()
+            {
+            };
+            Server server = new Server();
+            server.Run("../../Test/Gateway/Resource/Config/Startup.json", boot);
+        }
+
+        private void GatewayClientCase()
+        {
+            SparkServer.Test.Gateway.GatewayClientCase gatewayClient = new SparkServer.Test.Gateway.GatewayClientCase();
+
+            gatewayClient.Run("../../Test/Gateway/Resource/Config/Startup.json");
         }
     }
 }

@@ -1,0 +1,7 @@
+{
+  "Gateway": {
+    "host": "127.0.0.1:8888",
+    "class": "SparkServer.Test.Gateway.GatewayCase",
+    "name": "gateway"
+  }
+}

@@ -261,7 +261,7 @@ namespace SparkServer.Framework
         {
             SocketData data = new SocketData();
             data.connection = sessionId;
-            data.buffer = Encoding.ASCII.GetString(buffer);
+            data.buffer = Convert.ToBase64String(buffer);
 
             Message msg = new Message();
             msg.Source = 0;

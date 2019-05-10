@@ -42,7 +42,7 @@ namespace SparkServer.Test
         {
             BootServices boot = delegate ()
             {
-                SparkServerUtility.NewService("SparkServer.Test.RecvSkynetRequest.SkynetMessageReceiver");
+                SparkServerUtility.NewService("SparkServer.Test.RecvSkynetRequest.SkynetMessageReceiver", "RecvSkynetSend");
             };
             Server server = new Server();
             server.Run("../../Test/RecvSkynetRequest/Resource/Config/Startup.json", boot);

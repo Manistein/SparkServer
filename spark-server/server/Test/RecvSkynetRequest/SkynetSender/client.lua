@@ -1,110 +1,79 @@
 --[["
-desc: client
-author: zhangzhijie
-since: 2019-05-09
-"]]
+    desc: battle client 
+    author: manistein
+    since: 2019-03-28
+ "]]
 
-local socket		= require "socket"
-local skynet		= require "skynet"
-local sprotoloader	= require "sprotoloader"
-local sprotocore	= require "sproto.core"
-local const         = require "const"
+local skynet    = require "skynet"
+local cluster   = require "cluster"
+local md5       = require "md5"
+local crypt     = require "skynet.crypt"
+local sprotoloader = require "sprotoloader"
+local sprotocore = require "sproto.core"
 
-local sproto_s2ss = nil
+local sprotoreq = nil
 
-local function encode_data(proto_name, lua_table)
-    local sproto_stream = sproto_s2ss:request_encode(proto_name, lua_table)
-	local proto_id = 100
-    local sproto_length = #sproto_stream
-    local sproto_data = string.pack("<I2c" .. tostring(sproto_length), proto_id, sproto_stream)
-
-    local package = string.pack(">s2", sproto_data)
-    return package
-end
-
-local function decode_data(package)
-    local size = #package - 2
-    local proto_id, body = string.unpack("<I2c" .. tostring(size), package)
-	local proto_name = sprotocore.protocol(sproto_s2ss.__cobj, proto_id)
-	return proto_name, sproto_s2ss:response_decode(proto_id, body)
-end
-
-function new_client() 
-    local client_info = {}
-    local fd = nil
-
-    client_info.connect = function(ip, port)
-        fd = socket.open(ip, port)
-        assert(fd, "can not open connect")
+local function print_tbl(root)
+    if root == nil then
+        return skynet.error("PRINT_T root is nil")
+    end
+    if type(root) ~= type({}) then
+        return skynet.error("PRINT_T root not table type")
+    end
+    if not next(root) then
+        return skynet.error("PRINT_T root is space table")
     end
 
-    client_info.close = function()
-        assert(fd)
-        socket.close(fd)
-        fd = nil
+    local cache = { [root] = "." }
+    local function _dump(t,space,name)
+        local temp = {}
+        for k,v in pairs(t) do
+            local key = tostring(k)
+            if cache[v] then
+                table.insert(temp,"+" .. key .. " {" .. cache[v].."}")
+            elseif type(v) == "table" then
+                local new_key = name .. "." .. key
+                cache[v] = new_key
+                table.insert(temp,"+" .. key .. _dump(v,space .. (next(t,k) and "|" or " " ).. string.rep(" ",#key),new_key))
+            else
+                table.insert(temp,"+" .. key .. " [" .. tostring(v).."]")
+            end
+        end
+        return table.concat(temp,"\n"..space)
     end
-
-    client_info.read_package = function()
-        local size_buf = socket.read(fd, 2)
-        local size = string.unpack("<I2", size_buf)
-        local data_buf = socket.read(fd, size)
-        local proto_name, data = decode_data(data_buf)
-        return proto_name, data
-    end
-
-    client_info.send_package = function(proto_name, send_data)
-        local package = encode_data(proto_name, send_data)
-        socket.write(fd, package)
-    end
-
-    return client_info
+    skynet.error(_dump(root, "",""))
 end
 
-function request_one(client_info, proto_name, ...)
-    local send_data = request.get_request_info(proto_name, ...)
-    client_info.send_package(proto_name, send_data)
+local command = {}
+
+function command.init()
+    skynet.timeout(1, command.update)   
+    math.randomseed(skynet.time())
+
+    sprotoreq = sprotoloader.load(1)
+end 
+
+function command.update()
+    local content, proto_id = sprotoreq:request_encode("RPC", { method = "OnProcessRequest", param = crypt.base64encode("hahahaha hohohoho xixixixi") })
+
+    local proxy = cluster.proxy("testserver", "RecvSkynetSend")
+    skynet.error(string.format(">>>>>>>>>>>>>>>>>content len:%d", string.len(content)))
+    local result_index, response = skynet.call(proxy, "lua", proto_id, content) 
+    skynet.error(string.format("<<<<<<<<<<<<<<<<<result_index:%d response:%d", result_index, string.len(response))) 
+
+    local tbl, name = sprotoreq:response_decode(result_index, response)
+    skynet.error(string.format("response method:%s param:%s", tbl.method, crypt.base64decode(tbl.param)))
+
+    skynet.timeout(500, command.update) 
 end
 
-function read_one_data(client_info)
-    local proto_name, data = client_info.read_package()
-    pbc.extract(data)
+skynet.start(function()
+    skynet.dispatch("lua", function(session, source, cmd, ...)
+        local func = command[cmd]
+        if func then 
+            func(...)
+        end 
+    end)    
 
-    skynet.error("request_one result proto_name:%s, data:%s ", proto_name, cjson.encode(data))
-    return proto_name, data
-end
-
-function read_all_data(client_info)
-    framework.sleep(100)
-    read_one_data(client_info)
-    read_all_data(client_info)
-end
-
-local end_role_id	= 2
-local current_id	= 1
-
-function begin_connection()
-    if current_id >= end_role_id then
-        return
-    end
-
-    current_id = current_id + 1
-    local client_info = new_client()
-    client_info.connect("192.168.210.124", 8888)
-    skynet.error("connect spark server success")
-
-    local send_data = {
-        method = "test",
-        param = "hello spark server"
-    }
-
-    client_info.send_package("RPC", send_data)
-    read_one_data(client_info)
-    client_info.close()
-end
-
-skynet.start(function ()
-    skynet.newservice("sprotoboot")
-    sproto_s2ss = sprotoloader.load(const.SPROTO_LOADER_S2SS)
-
-    begin_connection()
+    command.init()
 end)

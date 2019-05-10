@@ -165,7 +165,7 @@ namespace SparkServer.Framework.Service
         private void OnError(Message msg)
         {
             NetProtocol instance = NetProtocol.GetInstance();
-            int tag = instance.GetTag(msg.Method);
+            int tag = instance.GetTag("Error");
             Error.response sprotoError = (Error.response)instance.Protocol.GenResponse(tag, msg.Data);
 
             RPCResponseContext responseCallback = null;
@@ -254,7 +254,7 @@ namespace SparkServer.Framework.Service
             request.remoteNode = remoteNode;
             request.remoteService = service;
             request.method = method;
-            request.param = Encoding.ASCII.GetString(param);
+            request.param = Convert.ToBase64String(param);
 
             Call("clusterClient", "Request", request.encode(), null, RemoteSendDummyCallback);
         }
@@ -270,7 +270,7 @@ namespace SparkServer.Framework.Service
             request.remoteNode = remoteNode;
             request.remoteService = service;
             request.method = method;
-            request.param = Encoding.ASCII.GetString(param);
+            request.param = Convert.ToBase64String(param);
 
             Call("clusterClient", "Request", request.encode(), context, cb);
         }

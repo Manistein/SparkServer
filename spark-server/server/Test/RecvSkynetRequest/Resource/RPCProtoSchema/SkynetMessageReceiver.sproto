@@ -10,11 +10,10 @@
 
 .RPCParam {
     method 0 : string
-    param 1 : string
+    param  1 : string
 }
 
 RPC 100 {
     request RPCParam
     response RPCParam
-            
 }

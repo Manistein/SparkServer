@@ -15,20 +15,21 @@ namespace SparkServer.Test.RecvSkynetRequest
         {
             base.Init();
 
-            RegisterServiceMethods("OnProcessSkynetRequest", OnProcessRequest);
+            RegisterServiceMethods("OnProcessRequest", OnProcessRequest);
         }
 
         private void OnProcessRequest(int source, int session, string method, byte[] param)
         {
-            SkynetMessageReceiver_OnProcessRequest request = new SkynetMessageReceiver_OnProcessRequest(param);
-            LoggerHelper.Info(m_serviceAddress, string.Format("skynet request_count:{0} request_text:{1}", request.request_count, request.request_text));
+            // SkynetMessageReceiver_OnProcessRequest request = new SkynetMessageReceiver_OnProcessRequest(param);
+            LoggerHelper.Info(m_serviceAddress, string.Format("skynet request_count:{0}", Encoding.ASCII.GetString(param)));
 
             if (session > 0)
             {
-                SkynetMessageReceiver_OnProcessRequestResponse response = new SkynetMessageReceiver_OnProcessRequestResponse();
-                response.request_count = request.request_count;
-                response.request_text = request.request_text;
-                DoResponse(source, method, response.encode(), session);
+                //SkynetMessageReceiver_OnProcessRequestResponse response = new SkynetMessageReceiver_OnProcessRequestResponse();
+                //response.request_count = request.request_count;
+                //response.request_text = request.request_text;
+
+                DoResponse(source, method, param, session);
             }
         }
     }

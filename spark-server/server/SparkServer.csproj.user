@@ -12,6 +12,6 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>SparkServer ../../Game/Resource/Config/Boot/Test.json</StartArguments>
+    <StartArguments>TestCases RecvSkynetRequest</StartArguments>
   </PropertyGroup>
 </Project>

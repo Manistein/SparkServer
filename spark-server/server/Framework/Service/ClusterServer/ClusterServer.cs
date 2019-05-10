@@ -50,7 +50,7 @@ namespace SparkServer.Framework.Service.ClusterServer
         {
             NetSprotoType.SocketAccept accept = new NetSprotoType.SocketAccept(param);
             LoggerHelper.Info(m_serviceAddress, 
-                string.Format("ClusterServer accept new connection {ip = {0}, port = {1}, connection = {2}}", accept.ip, accept.port, accept.connection));
+                string.Format("ClusterServer accept new connection ip = {0}, port = {1}, connection = {2}", accept.ip, accept.port, accept.connection));
         }
 
         private void SocketError(int source, int session, string method, byte[] param)
@@ -64,7 +64,7 @@ namespace SparkServer.Framework.Service.ClusterServer
         {
             NetSprotoType.SocketData socketData = new NetSprotoType.SocketData(param);
             long connectionId = socketData.connection;
-            byte[] tempParam = Encoding.ASCII.GetBytes(socketData.buffer);
+            byte[] tempParam = Convert.FromBase64String(socketData.buffer);
 
             SkynetClusterRequest req = m_skynetPacketManager.UnpackSkynetRequest(tempParam);
             if (req == null)
@@ -80,7 +80,7 @@ namespace SparkServer.Framework.Service.ClusterServer
             context.IntegerDict["RemoteSession"] = req.Session;
             context.LongDict["ConnectionId"] = connectionId;
 
-            byte[] targetParam = Encoding.ASCII.GetBytes(sprotoRequest.param);
+            byte[] targetParam = Convert.FromBase64String(sprotoRequest.param);
             Call(req.ServiceName, sprotoRequest.method, targetParam, context, TransferCallback);
         }
 
@@ -91,7 +91,7 @@ namespace SparkServer.Framework.Service.ClusterServer
                 int tag = NetProtocol.GetInstance().GetTag("RPC");
                 RPCParam rpcParam = new RPCParam();
                 rpcParam.method = method;
-                rpcParam.param = Encoding.ASCII.GetString(param);
+                rpcParam.param = Convert.ToBase64String(param);
 
                 int remoteSession = context.IntegerDict["RemoteSession"];
                 long connectionId = context.LongDict["ConnectionId"];
@@ -108,11 +108,10 @@ namespace SparkServer.Framework.Service.ClusterServer
             }
             else
             {
-                NetSprotoType.Error.response errorResponse = new NetSprotoType.Error.response(param);
                 int remoteSession = context.IntegerDict["RemoteSession"];
                 long connectionId = context.LongDict["ConnectionId"];
 
-                List<byte[]> bufferList = m_skynetPacketManager.PackErrorResponse(remoteSession, errorResponse.errorText);
+                List<byte[]> bufferList = m_skynetPacketManager.PackErrorResponse(remoteSession, Encoding.ASCII.GetString(param));
 
                 NetworkPacket rpcMessage = new NetworkPacket();
                 rpcMessage.Type = SocketMessageType.DATA;

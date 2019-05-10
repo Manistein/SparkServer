@@ -173,7 +173,7 @@ namespace SparkServer.Framework.Service.ClusterClient
             if (response.ErrorCode == RPCError.OK)
             {
                 RPCParam rpcParam = new RPCParam(response.Data);
-                tempParm = Encoding.ASCII.GetBytes(rpcParam.param);
+                tempParm = Convert.FromBase64String(rpcParam.param);
             }
 
             int remoteSession = response.Session;

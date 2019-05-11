@@ -49,7 +49,7 @@ namespace SparkServer
                 default:
                     {
                         Console.WriteLine("Mode:{0} not supported", mode);
-                    }break;
+                    } break;
             }
         }
 

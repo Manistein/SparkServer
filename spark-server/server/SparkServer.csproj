@@ -68,9 +68,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Examples\LoggerTest.cs" />
-    <Compile Include="Examples\TCPClientExample.cs" />
-    <Compile Include="Examples\TCPServerExample.cs" />
     <Compile Include="Framework\3rd\sproto\gen_example\BenchMark.cs" />
     <Compile Include="Framework\3rd\sproto\gen_example\Member.cs" />
     <Compile Include="Framework\3rd\sproto\gen_example\TestAll.cs" />

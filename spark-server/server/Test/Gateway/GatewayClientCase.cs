@@ -34,7 +34,7 @@ namespace SparkServer.Test.Gateway
             m_tcpClient = new TCPClient();
             m_tcpClient.Start(0, OnSessionError, OnReadPacketComplete, OnConnectComplete);
 
-            string gatewayHost = bootConfig["Gateway"]["host"].ToString();
+            string gatewayHost = bootConfig["Gateway"]["Host"].ToString();
             string[] ipResult = gatewayHost.Split(':');
             string gateIp = ipResult[0];
             Int32 gatePort = Int32.Parse(ipResult[1]);

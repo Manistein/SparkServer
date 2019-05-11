@@ -133,6 +133,9 @@
     <Compile Include="Test\Gateway\GatewayClientCase.cs" />
     <Compile Include="Test\RecvSkynetRequest\Resource\RPCProtoCS\SkynetMessageReceiver.cs" />
     <Compile Include="Test\RecvSkynetRequest\SkynetMessageReceiver.cs" />
+    <Compile Include="Test\RPC\Resource\RPCProtoCS\TestServer.cs" />
+    <Compile Include="Test\RPC\TestClient\TestClient.cs" />
+    <Compile Include="Test\RPC\TestServer\TestServer.cs" />
     <Compile Include="Test\TestCases.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -338,11 +341,14 @@
     <None Include="Test\RecvSkynetRequest\Resource\Config\Startup.json" />
     <None Include="Test\RecvSkynetRequest\Resource\RPCProtoSchema\SkynetMessageReceiver.sproto" />
     <None Include="Test\RecvSkynetRequest\Resource\sproto2cs.bat" />
+    <None Include="Test\RecvSkynetRequest\SkynetSender\client.lua" />
     <None Include="Test\RecvSkynetRequest\SkynetSender\clustername.lua" />
     <None Include="Test\RecvSkynetRequest\SkynetSender\conf" />
+    <None Include="Test\RecvSkynetRequest\SkynetSender\const.lua" />
+    <None Include="Test\RecvSkynetRequest\SkynetSender\log.lua" />
     <None Include="Test\RecvSkynetRequest\SkynetSender\main.lua" />
     <None Include="Test\RecvSkynetRequest\SkynetSender\sprotoboot.lua" />
-    <None Include="Test\RecvSkynetRequest\SkynetSender\testreq.lua" />
+    <None Include="Test\RPC\Resource\RPCProtoSchema\TestServer.sproto" />
     <None Include="Test\SendSkynetRequest\SkynetReceiver\readme.md" />
     <None Include="Test\TestDependency\3rd\src\cryptex\Makefile" />
     <None Include="Test\TestDependency\3rd\src\jemalloc-5.1.0.tar.gz" />
@@ -526,8 +532,11 @@
   <ItemGroup>
     <Folder Include="Framework\3rd\sproto\tools\" />
     <Folder Include="Test\Gateway\Logs\" />
-    <Folder Include="Test\RPCCall\" />
-    <Folder Include="Test\RPCSend\" />
+    <Folder Include="Test\RPC\LinuxShell\" />
+    <Folder Include="Test\RPC\Logs\Client\" />
+    <Folder Include="Test\RPC\Logs\Server\" />
+    <Folder Include="Test\RPC\Resource\Config\" />
+    <Folder Include="Test\RPC\WinCmd\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

@@ -3,3 +3,6 @@
 /spark-server/server/Tools/w32lualib/Bin/Debug
 /spark-server/server/Tools/w32lualib/Bin/Release
 /spark-server/server/obj
+/spark-server/server/Test/Gateway/logs
+/spark-server/server/Test/RPC/Logs/Client/logs
+/spark-server/server/Test/RPC/Logs/Server/logs

@@ -15,9 +15,10 @@ namespace SparkServer.Framework.Utility
             object obj = Activator.CreateInstance(type);
 
             ServiceContext service = obj as ServiceContext;
-            service.Init();
-
             ServiceSlots.GetInstance().Add(service);
+            service.Init();
+            service.MarkInitFinish();
+
             if (serviceName != "")
             {
                 ServiceSlots.GetInstance().Name(service.GetId(), serviceName);

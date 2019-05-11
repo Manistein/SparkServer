@@ -1,0 +1,9 @@
+.TestServer_OnRequest {
+    request_time 0 : integer
+    request_text 1 : string
+}
+
+.TestServer_OnRequestResponse {
+    response_time 0 : integer
+    response_text 1 : string
+}

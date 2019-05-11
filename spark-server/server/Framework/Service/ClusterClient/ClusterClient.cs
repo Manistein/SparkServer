@@ -251,7 +251,7 @@ namespace SparkServer.Framework.Service.ClusterClient
         {
             int tag = NetProtocol.GetInstance().GetTag("RPC");
             RPCParam rpcParam = new RPCParam();
-            rpcParam.method = method;
+            rpcParam.method = request.method;
             rpcParam.param = request.param;
 
             if (m_totalRemoteSession >= Int32.MaxValue)

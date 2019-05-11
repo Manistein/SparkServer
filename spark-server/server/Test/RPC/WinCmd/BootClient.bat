@@ -3,6 +3,4 @@
 set bin_path=../../../bin/Debug/
 
 cd %bin_path%
-spark-server.exe TestCases GatewayCase
-
-pause
+spark-server.exe TestCases RPCTestClient

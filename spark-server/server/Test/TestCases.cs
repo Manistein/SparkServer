@@ -19,8 +19,10 @@ namespace SparkServer.Test
             RegisterTestCase("RecvSkynetRequest", TestRecvSkynetRequest);
 
             RegisterTestCase("GatewayCase", GatewayCase);
-
             RegisterTestCase("GatewayClientCase", GatewayClientCase);
+
+            RegisterTestCase("RPCTestServer", RPCTestServer);
+            RegisterTestCase("RPCTestClient", RPCTestClient);
         }
 
         public void Run(string caseName)
@@ -38,6 +40,7 @@ namespace SparkServer.Test
             m_testCaseDict.Add(caseName, startup);
         }
 
+        // Test receive skynet request
         private void TestRecvSkynetRequest()
         {
             BootServices boot = delegate ()
@@ -48,6 +51,7 @@ namespace SparkServer.Test
             server.Run("../../Test/RecvSkynetRequest/Resource/Config/Startup.json", boot);
         }
 
+        // Gateway Test Case
         private void GatewayCase()
         {
             BootServices boot = delegate ()
@@ -62,6 +66,27 @@ namespace SparkServer.Test
             SparkServer.Test.Gateway.GatewayClientCase gatewayClient = new SparkServer.Test.Gateway.GatewayClientCase();
 
             gatewayClient.Run("../../Test/Gateway/Resource/Config/Startup.json");
+        }
+
+        // Test RPC
+        private void RPCTestServer()
+        {
+            BootServices boot = delegate ()
+            {
+                SparkServerUtility.NewService("SparkServer.Test.RPC.TestServer.TestServer", "RPCTestServer");
+            };
+            Server server = new Server();
+            server.Run("../../Test/RPC/Resource/Config/TestServerStartup.json", boot);
+        }
+
+        private void RPCTestClient()
+        {
+            BootServices boot = delegate ()
+            {
+                SparkServerUtility.NewService("SparkServer.Test.RPC.TestClient.TestClient", "RPCTestClient");
+            };
+            Server server = new Server();
+            server.Run("../../Test/RPC/Resource/Config/TestClientStartup.json", boot);
         }
     }
 }

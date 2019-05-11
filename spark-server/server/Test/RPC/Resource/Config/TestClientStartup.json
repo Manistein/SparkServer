@@ -1,0 +1,5 @@
+{
+    "ClusterConfig" : "../../Test/RPC/Resource/Config/ClusterName.json",
+    "ClusterName" : "testclient",
+    "Logger": "../../Test/RPC/Logs/Client/"
+}

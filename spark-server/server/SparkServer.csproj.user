@@ -12,6 +12,6 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>TestCases GatewayCase</StartArguments>
+    <StartArguments>TestCases RPCTestClient</StartArguments>
   </PropertyGroup>
 </Project>

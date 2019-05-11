@@ -78,6 +78,8 @@ namespace SparkServer.Framework.Service
         protected int m_serviceAddress = 0;
         protected int m_totalServiceSession = 0;
 
+        private bool m_isFinishInit = false;
+
         private Dictionary<string, Method> m_serviceMethods = new Dictionary<string, Method>();
         private Dictionary<int, RPCResponseContext> m_responseCallbacks = new Dictionary<int, RPCResponseContext>();
         private Dictionary<int, TimeoutContext> m_timeoutCallbacks = new Dictionary<int, TimeoutContext>();
@@ -85,6 +87,16 @@ namespace SparkServer.Framework.Service
         public virtual void Init()
         {
             
+        }
+
+        public void MarkInitFinish()
+        {
+            m_isFinishInit = true;
+        }
+
+        public bool IsInitFinish()
+        {
+            return m_isFinishInit;
         }
 
         public virtual void Callback(Message msg)

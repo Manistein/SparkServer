@@ -81,16 +81,12 @@ namespace SparkServer.Framework
 
         private void InitCluster()
         {
-            ClusterServer clusterServer = new ClusterServer();
-            clusterServer.Init();
-            m_serviceSlots.Add(clusterServer);
-            m_serviceSlots.Name(clusterServer.GetId(), "clusterServer");
+            int clusterServerId = SparkServerUtility.NewService("SparkServer.Framework.Service.ClusterServer.ClusterServer", "clusterServer");
+            ClusterServer clusterServer = (ClusterServer)m_serviceSlots.Get(clusterServerId);
 
-            ClusterClient clusterClient = new ClusterClient();
-            clusterClient.Init();
-            m_serviceSlots.Add(clusterClient);
+            int clusterClientId = SparkServerUtility.NewService("SparkServer.Framework.Service.ClusterClient.ClusterClient", "clusterClient");
+            ClusterClient clusterClient = (ClusterClient)m_serviceSlots.Get(clusterClientId);            
             clusterClient.ParseClusterConfig(m_bootConfig["ClusterConfig"].ToString());
-            m_serviceSlots.Name(clusterClient.GetId(), "clusterClient");
 
             m_clusterTCPServer = new TCPServer();
             m_clusterTCPServer.Start(m_clusterServerIp, m_clusterServerPort, 30, clusterServer.GetId(), OnSessionError, OnReadPacketComplete, OnAcceptComplete);
@@ -130,8 +126,8 @@ namespace SparkServer.Framework
             NetProtocol.GetInstance();
 
             // create logger service second
-            LoggerService loggerService = new LoggerService();
-            loggerService.Init();
+            int loggerId = SparkServerUtility.NewService("SparkServer.Framework.Service.Logger.LoggerService", "logger");
+            LoggerService loggerService = (LoggerService)m_serviceSlots.Get(loggerId);
 
             if (m_bootConfig.ContainsKey("Logger") && Directory.Exists(m_bootConfig["Logger"].ToString()))
             {
@@ -141,9 +137,6 @@ namespace SparkServer.Framework
             {
                 loggerService.Startup("../");
             }
-
-            m_serviceSlots.Add(loggerService);
-            m_serviceSlots.Name(loggerService.GetId(), "logger");
 
             m_tcpObjectContainer = new TCPObjectContainer();
             if (m_bootConfig.ContainsKey("ClusterConfig"))
@@ -158,7 +151,7 @@ namespace SparkServer.Framework
 
             customBoot();
 
-            LoggerHelper.Info(0, "Start Battle Server...");
+            LoggerHelper.Info(0, "Start SparkServer Server...");
 
             for (int i = 0; i < m_workerNum; i++)
             {
@@ -205,6 +198,12 @@ namespace SparkServer.Framework
                 else
                 {
                     ServiceContext service = m_serviceSlots.Get(serviceId);
+                    if (!service.IsInitFinish())
+                    {
+                        m_globalMQ.Push(service.GetId());
+                        continue;
+                    }
+
                     Message msg = service.Pop();
                     if (msg != null)
                     {

@@ -51,6 +51,20 @@ namespace SparkServer.Framework
             Loop();
         }
 
+        /*
+        public void RegisterGateway(Gateway gateway, string name)
+        {
+            if (gateway.GetId() != 0)
+            {
+                return;
+            }
+
+            m_gateway = gateway;
+            m_serviceSlots.Add(gateway);
+            m_serviceSlots.Name(gateway.GetId(), name);
+        }
+        */
+
         private void InitConfig(string bootConf)
         {
             string bootConfigText = ConfigHelper.LoadFromFile(bootConf);
@@ -72,10 +86,17 @@ namespace SparkServer.Framework
 
             if (m_bootConfig.ContainsKey("Gateway"))
             {
-                string gatewayEndpoint = m_bootConfig["Gateway"]["Host"].ToString();
+                string gatewayEndpoint = m_bootConfig["Gateway"]["host"].ToString();
                 string[] ipResult = gatewayEndpoint.Split(':');
                 m_gateIp = ipResult[0];
                 m_gatePort = Int32.Parse(ipResult[1]);
+            }
+
+            if (m_bootConfig.ContainsKey("ThreadNum"))
+            {
+                int threadNum = (int)m_bootConfig["ThreadNum"];
+                if (threadNum > 0)
+                    m_workerNum = threadNum;
             }
         }
 
@@ -107,8 +128,8 @@ namespace SparkServer.Framework
 
         private void InitGateway()
         {
-            string gatewayClass = m_bootConfig["Gateway"]["Class"].ToString();
-            string gatewayName = m_bootConfig["Gateway"]["Name"].ToString();
+            string gatewayClass = m_bootConfig["Gateway"]["class"].ToString();
+            string gatewayName = m_bootConfig["Gateway"]["name"].ToString();
 
             m_tcpGate = new TCPServer();
             m_tcpObjectContainer.Add(m_tcpGate);
@@ -148,7 +169,7 @@ namespace SparkServer.Framework
                 InitCluster();
             }
 
-            if (m_bootConfig.ContainsKey("Gateway"))
+            if (m_bootConfig.ContainsKey("Gateway") && m_gateway == null)
             {
                 InitGateway();
             }

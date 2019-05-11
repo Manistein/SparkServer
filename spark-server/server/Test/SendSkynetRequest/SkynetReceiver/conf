@@ -1,0 +1,21 @@
+root = "./"
+thread = 2
+logpath = "."
+harbor = 0
+start = "main"
+bootstrap = "snlua bootstrap"
+lualoader = root.."../skynet/lualib/loader.lua"
+
+cpath = root.."../skynet/cservice/?.so;"
+        ..root.."../3rd/clib/loggerx/?.so;"
+luaservice = root.."../skynet/service/?.lua;"
+            ..root.."../../SendSkynetRequest/SkynetReceiver/?.lua;"
+lua_cpath = root.."../skynet/luaclib/?.so;"
+lua_path = root.."../skynet/lualib/?.lua;../skynet/lualib/compat10/?.lua;../skynet/lualib/?/init.lua;"
+            ..root.."../3rd/lualib/?.lua;"
+            ..root.."../../SendSkynetRequest/SkynetReceiver/?.lua;"
+
+logger = "../../SendSkynetRequest/Logs" 
+logservice = "loggerx"
+
+cluster = root.."../../SendSkynetRequest/SkynetReceiver/clustername.lua"

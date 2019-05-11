@@ -132,6 +132,9 @@
     <Compile Include="Game\Service\TestSender.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test\Gateway.cs" />
+    <Compile Include="Test\Gateway\GateWayCase.cs" />
+    <Compile Include="Test\Gateway\GatewayClientCase.cs" />
     <Compile Include="Test\RecvSkynetRequest\Resource\RPCProtoCS\SkynetMessageReceiver.cs" />
     <Compile Include="Test\RecvSkynetRequest\SkynetMessageReceiver.cs" />
     <Compile Include="Test\TestCases.cs" />
@@ -333,6 +336,7 @@
     <None Include="Framework\Tools\sproto2cs\sprotodump\serpent.lua" />
     <None Include="Framework\Tools\sproto2cs\sprotodump\sprotodump.lua" />
     <None Include="Framework\Tools\sproto2cs\sprotodump\util.lua" />
+    <None Include="Test\Gateway\Resource\Config\Startup.json" />
     <None Include="Test\RecvSkynetRequest\Logs\readme.md" />
     <None Include="Test\RecvSkynetRequest\Resource\Config\ClusterName.json" />
     <None Include="Test\RecvSkynetRequest\Resource\Config\Startup.json" />
@@ -525,7 +529,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Framework\3rd\sproto\tools\" />
-    <Folder Include="Test\Gateway\" />
     <Folder Include="Test\RPCCall\" />
     <Folder Include="Test\RPCSend\" />
   </ItemGroup>

@@ -43,19 +43,19 @@ namespace SparkServer
                     {
                         string bootPath = args[1];
 
+                        BootServices bootService = delegate ()
+                        {
+                            SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskDispatcher", "BattleDispatcher");
+                        };
+
                         Server battleServer = new Server();
-                        battleServer.Run(bootPath, InitBattleServices);
-                    }break;
+                        battleServer.Run(bootPath, bootService);
+                    } break;
                 default:
                     {
                         Console.WriteLine("Mode:{0} not supported", mode);
                     } break;
             }
-        }
-
-        public static void InitBattleServices()
-        {
-            SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskDispatcher", "BattleDispatcher");
         }
     }
 }

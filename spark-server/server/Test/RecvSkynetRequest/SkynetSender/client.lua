@@ -53,23 +53,32 @@ function command.init()
     sprotoreq = sprotoloader.load(1)
 end 
 
+local function test_remote_send(proxy, proto_id, content)
+    skynet.error(string.format(">>>>>>>>>>>>>>>>>test_remote_send content len:%d", string.len(content)))
+    skynet.send(proxy, "lua", proto_id, content) 
+end 
+
+local function test_remote_call(proxy, proto_id, content)
+    skynet.error(string.format(">>>>>>>>>>>>>>>>>test_remote_call content len:%d", string.len(content)))
+
+    local result_index, response = skynet.call(proxy, "lua", proto_id, content) 
+    skynet.error(string.format("<<<<<<<<<<<<<<<<<test_remote_call result_index:%d response:%d", result_index, string.len(response))) 
+
+    local tbl, name = sprotoreq:response_decode(result_index, response)
+    print_tbl(tbl)
+
+    local response_rpcparam = sprotoreq:decode("SkynetMessageReceiver_OnProcessRequestResponse", crypt.base64decode(tbl.param))
+    skynet.error(string.format("response method:%s request_count:%d param:%s", tbl.method, response_rpcparam.request_count, response_rpcparam.request_text))
+end 
+
 function command.update()
     local rpcparam = sprotoreq:encode("SkynetMessageReceiver_OnProcessRequest", { request_count = math.floor(skynet.time()), request_text = "hahahaha hohohoho xixixixi" })
 
     local content, proto_id = sprotoreq:request_encode("RPC", { method = "OnProcessRequest", param = crypt.base64encode(rpcparam) })
-
     local proxy = cluster.proxy("testserver", "RecvSkynetSend")
-    skynet.error(string.format(">>>>>>>>>>>>>>>>>content len:%d", string.len(content)))
 
-    skynet.send(proxy, "lua", proto_id, content) 
-    -- local result_index, response = skynet.call(proxy, "lua", proto_id, content) 
-    -- skynet.error(string.format("<<<<<<<<<<<<<<<<<result_index:%d response:%d", result_index, string.len(response))) 
-
-    -- local tbl, name = sprotoreq:response_decode(result_index, response)
-    -- print_tbl(tbl)
-
-    -- local response_rpcparam = sprotoreq:decode("SkynetMessageReceiver_OnProcessRequestResponse", crypt.base64decode(tbl.param))
-    -- skynet.error(string.format("response method:%s request_count:%d param:%s", tbl.method, response_rpcparam.request_count, response_rpcparam.request_text))
+    test_remote_send(proxy, proto_id, content)
+    test_remote_call(proxy, proto_id, content)
 
     skynet.timeout(500, command.update) 
 end

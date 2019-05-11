@@ -525,6 +525,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Framework\3rd\sproto\tools\" />
+    <Folder Include="Test\Gateway\Logs\" />
     <Folder Include="Test\RPCCall\" />
     <Folder Include="Test\RPCSend\" />
   </ItemGroup>

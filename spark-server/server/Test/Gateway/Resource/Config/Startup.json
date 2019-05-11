@@ -3,5 +3,7 @@
     "Host": "127.0.0.1:8888",
     "Class": "SparkServer.Test.Gateway.GatewayCase",
     "Name": "gateway"
-  }
+  },
+
+  "Logger": "../../Test/Gateway/"
 }

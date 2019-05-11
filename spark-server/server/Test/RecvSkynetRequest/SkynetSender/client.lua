@@ -60,14 +60,16 @@ function command.update()
 
     local proxy = cluster.proxy("testserver", "RecvSkynetSend")
     skynet.error(string.format(">>>>>>>>>>>>>>>>>content len:%d", string.len(content)))
-    local result_index, response = skynet.call(proxy, "lua", proto_id, content) 
-    skynet.error(string.format("<<<<<<<<<<<<<<<<<result_index:%d response:%d", result_index, string.len(response))) 
 
-    local tbl, name = sprotoreq:response_decode(result_index, response)
-    print_tbl(tbl)
+    skynet.send(proxy, "lua", proto_id, content) 
+    -- local result_index, response = skynet.call(proxy, "lua", proto_id, content) 
+    -- skynet.error(string.format("<<<<<<<<<<<<<<<<<result_index:%d response:%d", result_index, string.len(response))) 
 
-    local response_rpcparam = sprotoreq:decode("SkynetMessageReceiver_OnProcessRequestResponse", crypt.base64decode(tbl.param))
-    skynet.error(string.format("response method:%s request_count:%d param:%s", tbl.method, response_rpcparam.request_count, response_rpcparam.request_text))
+    -- local tbl, name = sprotoreq:response_decode(result_index, response)
+    -- print_tbl(tbl)
+
+    -- local response_rpcparam = sprotoreq:decode("SkynetMessageReceiver_OnProcessRequestResponse", crypt.base64decode(tbl.param))
+    -- skynet.error(string.format("response method:%s request_count:%d param:%s", tbl.method, response_rpcparam.request_count, response_rpcparam.request_text))
 
     skynet.timeout(500, command.update) 
 end

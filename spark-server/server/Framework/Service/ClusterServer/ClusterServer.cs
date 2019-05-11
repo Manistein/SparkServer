@@ -75,13 +75,20 @@ namespace SparkServer.Framework.Service.ClusterServer
             NetProtocol instance = NetProtocol.GetInstance();
             int tag = instance.GetTag("RPC");
             RPCParam sprotoRequest = (RPCParam)instance.Protocol.GenRequest(tag, req.Data);
-
-            SSContext context = new SSContext();
-            context.IntegerDict["RemoteSession"] = req.Session;
-            context.LongDict["ConnectionId"] = connectionId;
-
             byte[] targetParam = Convert.FromBase64String(sprotoRequest.param);
-            Call(req.ServiceName, sprotoRequest.method, targetParam, context, TransferCallback);
+
+            if (req.Session > 0)
+            {
+                SSContext context = new SSContext();
+                context.IntegerDict["RemoteSession"] = req.Session;
+                context.LongDict["ConnectionId"] = connectionId;
+
+                Call(req.ServiceName, sprotoRequest.method, targetParam, context, TransferCallback);
+            }
+            else
+            {
+                Send(req.ServiceName, sprotoRequest.method, targetParam);
+            }
         }
 
         private void TransferCallback(SSContext context, string method, byte[] param, RPCError error)

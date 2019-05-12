@@ -20,6 +20,7 @@ namespace SparkServer.Framework.Utility
             message.Data = Encoding.ASCII.GetBytes(msg);
             message.Destination = loggerService.GetId();
             message.Source = source;
+            message.Type = MessageType.ServiceRequest;
             loggerService.Push(message);
         }
     }

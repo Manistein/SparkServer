@@ -1,4 +1,5 @@
-﻿using SparkServer.Framework.Utility;
+﻿using NetSprotoType;
+using SparkServer.Framework.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,21 +13,24 @@ namespace SparkServer.Framework.Service.Gateway
         private Dictionary<string, Method> m_socketMethods = new Dictionary<string, Method>();
         private int m_tcpObjectId = 0;
 
-        protected override void Init()
+        protected override void Init(byte[] param)
         {
             base.Init();
+
+            Gateway_Init gatewayInit = new Gateway_Init();
+            SetTCPObjectId((int)gatewayInit.tcp_server_id);
 
             RegisterSocketMethods("SocketAccept", SocketAccept);
             RegisterSocketMethods("SocketData", SocketData);
             RegisterSocketMethods("SocketError", SocketError);
         }
 
-        public void SetTCPObjectId(int tcpObjectId)
+        private void SetTCPObjectId(int tcpObjectId)
         {
             m_tcpObjectId = tcpObjectId;
         }
 
-        public int GetTcpObjectId()
+        protected int GetTcpObjectId()
         {
             return m_tcpObjectId;
         }

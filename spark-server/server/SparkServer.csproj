@@ -98,7 +98,9 @@
     <Compile Include="Framework\MessageQueue\GlobalMQ.cs" />
     <Compile Include="Framework\MessageQueue\NetworkPacketQueue.cs" />
     <Compile Include="Framework\Resource\RPCProtoCS\ClusterClient.cs" />
+    <Compile Include="Framework\Resource\RPCProtoCS\ClusterServer.cs" />
     <Compile Include="Framework\Resource\RPCProtoCS\Common.cs" />
+    <Compile Include="Framework\Resource\RPCProtoCS\Gateway.cs" />
     <Compile Include="Framework\Resource\RPCProtoCS\Logger.cs" />
     <Compile Include="Framework\Resource\RPCProtoCS\NetProtocol.cs" />
     <Compile Include="Framework\Server.cs" />
@@ -313,7 +315,9 @@
     <None Include="Framework\Resource\Config\Boot\Test.json" />
     <None Include="Framework\Resource\Config\ClusterName.json" />
     <None Include="Framework\Resource\RPCProtoSchema\ClusterClient.sproto" />
+    <None Include="Framework\Resource\RPCProtoSchema\ClusterServer.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\Common.sproto" />
+    <None Include="Framework\Resource\RPCProtoSchema\Gateway.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\Logger.sproto" />
     <None Include="Game\Resource\Config\Boot\Test.json" />
     <None Include="Game\Resource\Config\ClusterName.json" />

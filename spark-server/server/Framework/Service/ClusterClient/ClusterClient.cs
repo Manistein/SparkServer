@@ -39,9 +39,13 @@ namespace SparkServer.Framework.Service.ClusterClient
 
         private JObject m_clusterConfig = new JObject();
 
-        protected override void Init()
+        protected override void Init(byte[] param)
         {
             base.Init();
+
+            ClusterClient_Init init = new ClusterClient_Init(param);
+            SetTCPObjectId((int)init.tcp_client_id);
+            ParseClusterConfig(init.cluster_config);
 
             RegisterSocketMethods("SocketConnected", SocketConnected);
             RegisterSocketMethods("SocketError", SocketError);
@@ -50,13 +54,13 @@ namespace SparkServer.Framework.Service.ClusterClient
             RegisterServiceMethods("Request", Request);
         }
 
-        public void ParseClusterConfig(string clusterPath)
+        private void ParseClusterConfig(string clusterPath)
         {
             string clusterConfigText = ConfigHelper.LoadFromFile(clusterPath);
             m_clusterConfig = JObject.Parse(clusterConfigText);
         }
 
-        public void SetTCPObjectId(int tcpObjectId)
+        private void SetTCPObjectId(int tcpObjectId)
         {
             m_tcpObjectId = tcpObjectId;
         }

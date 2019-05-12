@@ -1,3 +1,8 @@
+.ClusterClient_Init {
+    cluster_config 0 : string
+    tcp_client_id  1 : integer
+}
+
 .ClusterClientRequest {
     remoteNode      0 : string
     remoteService   1 : string

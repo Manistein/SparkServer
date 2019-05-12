@@ -81,23 +81,28 @@ namespace SparkServer.Framework
 
         private void InitCluster()
         {
-            int clusterServerId = SparkServerUtility.NewService("SparkServer.Framework.Service.ClusterServer.ClusterServer", "clusterServer");
-            ClusterServer clusterServer = (ClusterServer)m_serviceSlots.Get(clusterServerId);
-
-            int clusterClientId = SparkServerUtility.NewService("SparkServer.Framework.Service.ClusterClient.ClusterClient", "clusterClient");
-            ClusterClient clusterClient = (ClusterClient)m_serviceSlots.Get(clusterClientId);            
-            clusterClient.ParseClusterConfig(m_bootConfig["ClusterConfig"].ToString());
-
             m_clusterTCPServer = new TCPServer();
-            m_clusterTCPServer.Start(m_clusterServerIp, m_clusterServerPort, 30, clusterServer.GetId(), OnSessionError, OnReadPacketComplete, OnAcceptComplete);
             m_tcpObjectContainer.Add(m_clusterTCPServer);
 
             m_clusterTCPClient = new TCPClient();
-            m_clusterTCPClient.Start(clusterClient.GetId(), OnSessionError, OnReadPacketComplete, OnConnectedComplete);
             m_tcpObjectContainer.Add(m_clusterTCPClient);
 
-            clusterServer.SetTCPObjectId(m_clusterTCPServer.GetObjectId());
-            clusterClient.SetTCPObjectId(m_clusterTCPClient.GetObjectId());
+            ClusterServer_Init clusterServerInit = new ClusterServer_Init();
+            clusterServerInit.tcp_server_id = m_clusterTCPServer.GetObjectId();
+            int clusterServerId = SparkServerUtility.NewService("SparkServer.Framework.Service.ClusterServer.ClusterServer", 
+                "clusterServer", 
+                clusterServerInit.encode());
+
+            ClusterClient_Init clusterClientInit = new ClusterClient_Init();
+            clusterClientInit.tcp_client_id = m_clusterTCPClient.GetObjectId();
+            clusterClientInit.cluster_config = m_bootConfig["ClusterConfig"].ToString();
+            int clusterClientId = SparkServerUtility.NewService("SparkServer.Framework.Service.ClusterClient.ClusterClient", 
+                "clusterClient", 
+                clusterClientInit.encode());            
+            
+            m_clusterTCPServer.Start(m_clusterServerIp, m_clusterServerPort, 30, clusterServerId, 
+                OnSessionError, OnReadPacketComplete, OnAcceptComplete);
+            m_clusterTCPClient.Start(clusterClientId, OnSessionError, OnReadPacketComplete, OnConnectedComplete);
         }
 
         private void InitGateway()
@@ -105,14 +110,14 @@ namespace SparkServer.Framework
             string gatewayClass = m_bootConfig["Gateway"]["Class"].ToString();
             string gatewayName = m_bootConfig["Gateway"]["Name"].ToString();
 
-            int gatewayId = SparkServerUtility.NewService(gatewayClass, gatewayName);
-            m_gateway = ServiceSlots.GetInstance().Get(gatewayId) as Gateway;
-
             m_tcpGate = new TCPServer();
-            m_tcpGate.Start(m_gateIp, m_gatePort, 30, m_gateway.GetId(), OnSessionError, OnReadPacketComplete, OnAcceptComplete);
             m_tcpObjectContainer.Add(m_tcpGate);
 
-            m_gateway.SetTCPObjectId(m_tcpGate.GetObjectId());
+            Gateway_Init gateInit = new Gateway_Init();
+            gateInit.tcp_server_id = m_tcpGate.GetObjectId();
+
+            int gatewayId = SparkServerUtility.NewService(gatewayClass, gatewayName, gateInit.encode());
+            m_tcpGate.Start(m_gateIp, m_gatePort, 30, gatewayId, OnSessionError, OnReadPacketComplete, OnAcceptComplete);
         }
 
         private void Boot(BootServices customBoot)

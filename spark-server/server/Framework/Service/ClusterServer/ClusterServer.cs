@@ -16,16 +16,19 @@ namespace SparkServer.Framework.Service.ClusterServer
         private SkynetPacketManager m_skynetPacketManager = new SkynetPacketManager();
         Dictionary<string, Method> m_socketMethods = new Dictionary<string, Method>();
 
-        protected override void Init()
+        protected override void Init(byte[] param)
         {
             base.Init();
+
+            ClusterServer_Init init = new ClusterServer_Init(param);
+            SetTCPObjectId((int)init.tcp_server_id);
 
             RegisterSocketMethods("SocketAccept", SocketAccept);
             RegisterSocketMethods("SocketError", SocketError);
             RegisterSocketMethods("SocketData", SocketData);
         }
 
-        public void SetTCPObjectId(int tcpObjectId)
+        private void SetTCPObjectId(int tcpObjectId)
         {
             m_tcpObjectId = tcpObjectId;
         }

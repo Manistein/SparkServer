@@ -1,0 +1,3 @@
+.ClusterServer_Init {
+    tcp_server_id 0 : integer
+}

@@ -1,0 +1,3 @@
+.Logger_Init {
+    logger_path 0 : string
+}

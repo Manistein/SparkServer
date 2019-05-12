@@ -126,17 +126,17 @@ namespace SparkServer.Framework
             NetProtocol.GetInstance();
 
             // create logger service second
-            int loggerId = SparkServerUtility.NewService("SparkServer.Framework.Service.Logger.LoggerService", "logger");
-            LoggerService loggerService = (LoggerService)m_serviceSlots.Get(loggerId);
-
+            Logger_Init loggerInit = new Logger_Init();
             if (m_bootConfig.ContainsKey("Logger") && Directory.Exists(m_bootConfig["Logger"].ToString()))
             {
-                loggerService.Startup(m_bootConfig["Logger"].ToString());
+                loggerInit.logger_path = m_bootConfig["Logger"].ToString();
             }
             else
             {
-                loggerService.Startup("../");
+                loggerInit.logger_path = "../";
             }
+            int loggerId = SparkServerUtility.NewService("SparkServer.Framework.Service.Logger.LoggerService", "logger", loggerInit.encode());
+            LoggerService loggerService = (LoggerService)m_serviceSlots.Get(loggerId);
 
             m_tcpObjectContainer = new TCPObjectContainer();
             if (m_bootConfig.ContainsKey("ClusterConfig"))

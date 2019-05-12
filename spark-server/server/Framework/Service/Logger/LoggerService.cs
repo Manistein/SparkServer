@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetSprotoType;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -13,12 +14,17 @@ namespace SparkServer.Framework.Service.Logger
     {
         private NLog.Logger m_logger; // = LogManager.GetCurrentClassLogger();
 
-        protected override void Init()
+        protected override void Init(byte[] param)
         {
             base.Init();
+
+            Logger_Init loggerInit = new Logger_Init(param);
+            Startup(loggerInit.logger_path);
+
+            RegisterServiceMethods("OnLog", OnLog);
         }
 
-        public void Startup(string loggerPath)
+        private void Startup(string loggerPath)
         {
             // 配置参见 https://github.com/nlog/nlog/wiki/Configuration-API
 
@@ -26,7 +32,7 @@ namespace SparkServer.Framework.Service.Logger
 
             var logRoot = loggerPath;
 
-            var filePrefix = "battle_1_";
+            var filePrefix = "log_";
 
             var fileTarget = new FileTarget("target")
             {
@@ -44,11 +50,9 @@ namespace SparkServer.Framework.Service.Logger
             m_logger = LogManager.GetCurrentClassLogger();
         }
 
-        public override void Callback(Message msg)
+        private void OnLog(int source, int session, string method, byte[] param)
         {
-            base.Callback(msg);
-
-            string outStr = string.Format("[{0:X8}] {1}", msg.Source, Encoding.ASCII.GetString(msg.Data));
+            string outStr = string.Format("[{0:X8}] {1}", source, Encoding.ASCII.GetString(param));
             m_logger.Info(outStr);
 
             // Console.WriteLine("{0} source serviceId:{1} info:{2}", DateTime.Now, msg.Source, Encoding.ASCII.GetString(msg.Data));

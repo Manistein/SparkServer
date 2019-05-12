@@ -89,10 +89,18 @@ namespace SparkServer.Framework.Service
 
         protected void OnInit(int source, int session, string method, byte[] param)
         {
-            Init();
+            if (param != null)
+                Init(param);
+            else
+                Init();
         }
 
         protected virtual void Init()
+        {
+
+        }
+
+        protected virtual void Init(byte[] param)
         {
 
         }

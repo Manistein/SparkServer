@@ -16,6 +16,7 @@ namespace SparkServer.Framework.Utility
             LoggerService loggerService = (LoggerService)ServiceSlots.GetInstance().Get(logger);
 
             Message message = new Message();
+            message.Method = "OnLog";
             message.Data = Encoding.ASCII.GetBytes(msg);
             message.Destination = loggerService.GetId();
             message.Source = source;

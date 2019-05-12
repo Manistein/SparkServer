@@ -135,8 +135,7 @@ namespace SparkServer.Framework
             {
                 loggerInit.logger_path = "../";
             }
-            int loggerId = SparkServerUtility.NewService("SparkServer.Framework.Service.Logger.LoggerService", "logger", loggerInit.encode());
-            LoggerService loggerService = (LoggerService)m_serviceSlots.Get(loggerId);
+            SparkServerUtility.NewService("SparkServer.Framework.Service.Logger.LoggerService", "logger", loggerInit.encode());
 
             m_tcpObjectContainer = new TCPObjectContainer();
             if (m_bootConfig.ContainsKey("ClusterConfig"))

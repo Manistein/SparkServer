@@ -16,7 +16,7 @@ namespace SparkServer.Framework.Service.ClusterServer
         private SkynetPacketManager m_skynetPacketManager = new SkynetPacketManager();
         Dictionary<string, Method> m_socketMethods = new Dictionary<string, Method>();
 
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
 

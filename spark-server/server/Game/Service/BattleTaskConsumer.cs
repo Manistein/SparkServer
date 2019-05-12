@@ -11,7 +11,7 @@ namespace SparkServer.Game.Service
 {
     class BattleTaskConsumer : ServiceContext
     {
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
 

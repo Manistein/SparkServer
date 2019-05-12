@@ -16,8 +16,15 @@ namespace SparkServer.Framework.Utility
 
             ServiceContext service = obj as ServiceContext;
             ServiceSlots.GetInstance().Add(service);
-            service.Init();
-            service.MarkInitFinish();
+
+            Message initMsg = new Message();
+            initMsg.Source = 0;
+            initMsg.Destination = service.GetId();
+            initMsg.Method = "Init";
+            initMsg.RPCSession = 0;
+            initMsg.Type = MessageType.ServiceRequest;
+
+            service.Push(initMsg);
 
             if (serviceName != "")
             {

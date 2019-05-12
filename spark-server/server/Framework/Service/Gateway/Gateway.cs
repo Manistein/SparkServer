@@ -12,7 +12,7 @@ namespace SparkServer.Framework.Service.Gateway
         private Dictionary<string, Method> m_socketMethods = new Dictionary<string, Method>();
         private int m_tcpObjectId = 0;
 
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
 

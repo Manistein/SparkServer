@@ -39,7 +39,7 @@ namespace SparkServer.Framework.Service.ClusterClient
 
         private JObject m_clusterConfig = new JObject();
 
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
 

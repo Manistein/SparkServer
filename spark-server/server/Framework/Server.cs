@@ -198,12 +198,6 @@ namespace SparkServer.Framework
                 else
                 {
                     ServiceContext service = m_serviceSlots.Get(serviceId);
-                    if (!service.IsInitFinish())
-                    {
-                        m_globalMQ.Push(service.GetId());
-                        continue;
-                    }
-
                     Message msg = service.Pop();
                     if (msg != null)
                     {

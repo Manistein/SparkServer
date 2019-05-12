@@ -11,7 +11,7 @@ namespace SparkServer.Test.RPC.TestServer
 {
     class TestServer : ServiceContext
     {
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
 

@@ -10,7 +10,7 @@ namespace SparkServer.Game.Service
 {
     class TestSender : ServiceContext
     {
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
 

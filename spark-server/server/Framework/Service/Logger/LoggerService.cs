@@ -13,7 +13,7 @@ namespace SparkServer.Framework.Service.Logger
     {
         private NLog.Logger m_logger; // = LogManager.GetCurrentClassLogger();
 
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
         }

@@ -11,7 +11,7 @@ namespace SparkServer.Test.RecvSkynetRequest
 {
     class SkynetMessageReceiver : ServiceContext
     {
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
 

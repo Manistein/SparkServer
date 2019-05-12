@@ -14,7 +14,7 @@ namespace SparkServer.Game.Service
         private int m_index = 0;
         private List<int> m_consumerList = new List<int>();
 
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
             

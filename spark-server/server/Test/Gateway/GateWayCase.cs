@@ -9,7 +9,7 @@ namespace SparkServer.Test.Gateway
 {
     class GatewayCase : SparkServer.Framework.Service.Gateway.Gateway
     {
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
         }

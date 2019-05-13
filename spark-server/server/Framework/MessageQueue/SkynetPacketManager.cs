@@ -392,8 +392,6 @@ namespace SparkServer.Framework.MessageQueue
             int session = msg[0] | msg[1] << 8 | msg[2] << 16 | msg[3] << 24;
             startIndex += 4;
 
-            response.Session = session;
-
             int tag = msg[startIndex];
             startIndex++;
 
@@ -405,7 +403,7 @@ namespace SparkServer.Framework.MessageQueue
 
                         int byteCount = 0;
                         int protoId = (int)UnpackInteger(msg, startIndex, out byteCount);
-                        startIndex += byteCount;
+                        startIndex += 1 + byteCount;
                         byte[] tempData = UnpackString(msg, startIndex);
 
                         response.ErrorCode = RPCError.OK;
@@ -479,6 +477,11 @@ namespace SparkServer.Framework.MessageQueue
                         }
                     } break;
                 default: break;
+            }
+
+            if (response != null)
+            {
+                response.Session = session;   
             }
 
             return response;

@@ -167,21 +167,26 @@ namespace SparkServer.Framework.Service.ClusterClient
 
         private void SocketData(int source, int session, string method, byte[] param)
         {
-            SkynetClusterResponse response = m_skynetPacketManager.UnpackSkynetResponse(param);
+            NetSprotoType.SocketData socketData = new NetSprotoType.SocketData(param);
+            long connectionId = socketData.connection;
+            byte[] tempParam = Convert.FromBase64String(socketData.buffer);
+
+            SkynetClusterResponse response = m_skynetPacketManager.UnpackSkynetResponse(tempParam);
             if (response == null)
             {
                 return;
             }
 
-            byte[] tempParm = null;
+            byte[] targetParam = null;
             if (response.ErrorCode == RPCError.OK)
             {
-                RPCParam rpcParam = new RPCParam(response.Data);
-                tempParm = Convert.FromBase64String(rpcParam.param);
+                NetProtocol instance = NetProtocol.GetInstance();
+                RPCParam sprotoResponse = (RPCParam)instance.Protocol.GenResponse(response.ProtoId, response.Data);
+                targetParam = Convert.FromBase64String(sprotoResponse.param);
             }
 
             int remoteSession = response.Session;
-            ProcessRemoteResponse(remoteSession, tempParm, response.ErrorCode);
+            ProcessRemoteResponse(remoteSession, targetParam, response.ErrorCode);
         }
 
         private void ProcessRemoteResponse(int remoteSession, byte[] param, RPCError errorCode)

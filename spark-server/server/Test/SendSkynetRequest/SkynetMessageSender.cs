@@ -11,10 +11,10 @@ namespace SparkServer.Test.SendSkynetRequest
 {
     class SkynetMessageSender : ServiceContext
     {
-        public override void Init()
+        protected override void Init()
         {
             base.Init();
-
+            this.TestSendMsg();
             //RegisterServiceMethods("OnProcessResponse", OnProcessResponse);
         }
 
@@ -23,13 +23,20 @@ namespace SparkServer.Test.SendSkynetRequest
             SkynetMessageSender_OnProcessRequestResponse response = new SkynetMessageSender_OnProcessRequestResponse(param);
             LoggerHelper.Info(m_serviceAddress, string.Format("skynet request_count:{0}", response.request_text));
         }
-
-        public void SendSkynetRequest()
+        
+        public void TimeoutCallback(SSContext context, long currentTime)
         {
             SkynetMessageSender_OnProcessRequest request = new SkynetMessageSender_OnProcessRequest();
             request.request_count = 123456;
             request.request_text = "hello skynet";
-            RemoteCall("testclient", ".test_send_skynet", "send_skynet", request.encode(), new SSContext(), OnProcessResponse);
+            RemoteCall("testserver", ".test_send_skynet", "send_skynet", request.encode(), null, OnProcessResponse);
+
+            this.TestSendMsg();
+        }
+
+        private void TestSendMsg()
+        {
+            this.Timeout(new SSContext(), 10, TimeoutCallback);
         }
     }
 }

@@ -88,20 +88,24 @@ end
 
 function command.send_skynet(param)
 	local request_rpcparam = sprotoreq:decode("SkynetMessageSender_OnProcessRequest", param)
+
+	response_rpcparam = { request_count = math.floor(skynet.time()), request_text = "hahahaha hohohoho xixixixi" }
+	local rpcparam = sprotoreq:encode("SkynetMessageSender_OnProcessRequestResponse", response_rpcparam)
 	skynet.error(string.format("request request_count:%d request_text:%s", request_rpcparam.request_count, request_rpcparam.request_text))
+	local proto_id = 100
+	local content = sprotoreq:response_encode("RPCSend", { method = "OnProcessResponse", param = crypt.base64encode(rpcparam) })
+	skynet.retpack(proto_id, content)
 end
 
 skynet.start(function()
     skynet.dispatch("lua", function(session, source, protocol_id, ...)
 		local tbl, name = sprotoreq:request_decode(protocol_id, ...)
-		skynet.error(string.format("RPC SendSkynetMessage protocol_id[%d], method[%s]", protocol_id, tbl.method))
-		command.send_skynet(crypt.base64decode(tbl.param))
-		--[[
-        local func = command[tbl.param]
+		skynet.error(string.format("RPC SendSkynetMessage protocol_id[%d], protocol_method[%s], name[%s]", protocol_id, tbl.method, name))
+
+        local func = command[tbl.method]
         if func then 
             func(crypt.base64decode(tbl.param))
         end 
-		]]
     end)    
 
     command.init()

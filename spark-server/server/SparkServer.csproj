@@ -139,6 +139,8 @@
     <Compile Include="Test\RPC\Resource\RPCProtoCS\TestServer.cs" />
     <Compile Include="Test\RPC\TestClient\TestClient.cs" />
     <Compile Include="Test\RPC\TestServer\TestServer.cs" />
+    <Compile Include="Test\SendSkynetRequest\Resource\RPCProtoCS\SkynetMessageSender.cs" />
+    <Compile Include="Test\SendSkynetRequest\SkynetMessageSender.cs" />
     <Compile Include="Test\TestCases.cs" />
   </ItemGroup>
   <ItemGroup>

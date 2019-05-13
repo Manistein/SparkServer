@@ -23,6 +23,7 @@ namespace SparkServer.Test
 
             RegisterTestCase("RPCTestServer", RPCTestServer);
             RegisterTestCase("RPCTestClient", RPCTestClient);
+            RegisterTestCase("SendSkynetRequest", TestSendSkynetRequest);
         }
 
         public void Run(string caseName)
@@ -87,6 +88,16 @@ namespace SparkServer.Test
             };
             Server server = new Server();
             server.Run("../../Test/RPC/Resource/Config/TestClientStartup.json", boot);
+        }
+        
+        private void TestSendSkynetRequest()
+        {
+            BootServices boot = delegate ()
+            {
+                SparkServerUtility.NewService("SparkServer.Test.SendSkynetRequest.SkynetMessageSender", "SendSkynetMsg");
+            };
+            Server server = new Server();
+            server.Run("../../Test/SendSkynetRequest/Resource/Config/Startup.json", boot);
         }
     }
 }

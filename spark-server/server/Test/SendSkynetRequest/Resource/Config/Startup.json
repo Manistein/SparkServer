@@ -1,0 +1,5 @@
+{
+    "ClusterConfig": "../../Test/SendSkynetRequest/Resource/Config/ClusterName.json",
+    "ClusterName": "testclient",
+    "ThreadNum": 4
+}

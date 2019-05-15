@@ -109,7 +109,7 @@ namespace SparkServer.Network
 
         public void Stop()
         {
-            m_socket.Shutdown(SocketShutdown.Both);
+            // m_socket.Shutdown(SocketShutdown.Both);
             m_socket.Close();
             m_writeEvent.Dispose();
             m_readEvent.Dispose();

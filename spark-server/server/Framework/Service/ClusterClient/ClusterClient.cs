@@ -144,6 +144,7 @@ namespace SparkServer.Framework.Service.ClusterClient
                         ProcessRemoteResponse(remoteSession, null, RPCError.SocketDisconnected);
                     }
                     m_conn2sessions.Remove(error.connection);
+                    m_node2conn.Remove(node);
                 }
             }
             else
@@ -208,9 +209,20 @@ namespace SparkServer.Framework.Service.ClusterClient
         {
             NetSprotoType.ClusterClientRequest request = new NetSprotoType.ClusterClientRequest(param);
             string remoteNode = request.remoteNode;
+            string ipEndPoint = "";
+            if (m_clusterConfig.ContainsKey(remoteNode))
+            {
+                ipEndPoint = m_clusterConfig[remoteNode].ToString();
+            }
+            else
+            {
+                DoError(source, session, RPCError.UnknowRemoteNode, "Unknow Remote Node");
+                return;
+            }
+
             long connectionId = 0;
 
-            bool isExist = m_node2conn.TryGetValue(remoteNode, out connectionId);
+            bool isExist = m_node2conn.TryGetValue(ipEndPoint, out connectionId);
             if (isExist)
             {
                 RemoteRequest(source, method, request, connectionId, session);

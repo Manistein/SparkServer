@@ -37,8 +37,6 @@ namespace SparkServer.Framework
         private TCPServer m_tcpGate;
         private TCPObjectContainer m_tcpObjectContainer;
 
-        private Gateway m_gateway;
-
         private GlobalMQ m_globalMQ;
         private ServiceSlots m_serviceSlots;
         private NetworkPacketQueue m_netpackQueue;
@@ -50,20 +48,6 @@ namespace SparkServer.Framework
             Boot(customBoot);
             Loop();
         }
-
-        /*
-        public void RegisterGateway(Gateway gateway, string name)
-        {
-            if (gateway.GetId() != 0)
-            {
-                return;
-            }
-
-            m_gateway = gateway;
-            m_serviceSlots.Add(gateway);
-            m_serviceSlots.Name(gateway.GetId(), name);
-        }
-        */
 
         private void InitConfig(string bootConf)
         {
@@ -169,7 +153,7 @@ namespace SparkServer.Framework
                 InitCluster();
             }
 
-            if (m_bootConfig.ContainsKey("Gateway") && m_gateway == null)
+            if (m_bootConfig.ContainsKey("Gateway"))
             {
                 InitGateway();
             }

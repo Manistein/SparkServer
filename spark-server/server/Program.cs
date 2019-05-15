@@ -41,15 +41,22 @@ namespace SparkServer
                     } break;
                 case 2:
                     {
-                        string bootPath = args[1];
+                        string bootService = args[1];
+                        string bootPath = args[2];
+                        string bootServiceName = "";
 
-                        BootServices bootService = delegate ()
+                        if (args.Length >= 4)
                         {
-                            SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskDispatcher", "BattleDispatcher");
+                            bootServiceName = args[3];
+                        }
+
+                        BootServices startFunc = delegate ()
+                        {
+                            SparkServerUtility.NewService(bootService, bootServiceName);
                         };
 
                         Server battleServer = new Server();
-                        battleServer.Run(bootPath, bootService);
+                        battleServer.Run(bootPath, startFunc);
                     } break;
                 default:
                     {

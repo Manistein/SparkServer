@@ -125,11 +125,11 @@
     <Compile Include="Framework\Network\TCPServer.cs" />
     <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
     <Compile Include="Framework\Utility\SparkServer.cs" />
+    <Compile Include="Game\Process\TestSender\Sender.cs" />
     <Compile Include="Game\Resource\RPCProtoCS\BattleTaskConsumer.cs" />
     <Compile Include="Game\Resource\RPCProtoCS\BattleTaskDispatcher.cs" />
-    <Compile Include="Game\Service\BattleTaskConsumer.cs" />
-    <Compile Include="Game\Service\BattleTaskDispatcher.cs" />
-    <Compile Include="Game\Service\TestSender.cs" />
+    <Compile Include="Game\Process\Battle\BattleTaskConsumer.cs" />
+    <Compile Include="Game\Process\Battle\BattleTaskDispatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test\Gateway\GatewayCase.cs" />
@@ -321,11 +321,14 @@
     <None Include="Framework\Resource\RPCProtoSchema\Common.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\Gateway.sproto" />
     <None Include="Framework\Resource\RPCProtoSchema\Logger.sproto" />
-    <None Include="Game\Resource\Config\Boot\Test.json" />
-    <None Include="Game\Resource\Config\ClusterName.json" />
+    <None Include="Game\Startconf\LocalSvr\Battle\BootConfig.json" />
+    <None Include="Game\Startconf\LocalSvr\ClusterName.json" />
     <None Include="Game\Resource\RPCProtoSchema\BattleTaskConsumer.sproto" />
     <None Include="Game\Resource\RPCProtoSchema\BattleTaskDispatcher.sproto" />
-    <None Include="Game\Tools\sproto2cs.bat" />
+    <None Include="Game\Resource\sproto2cs.bat" />
+    <None Include="Game\Startconf\LocalSvr\TestSender\BootConfig.json" />
+    <None Include="Game\WinCmd\BootBattle.bat" />
+    <None Include="Game\WinCmd\BootTestSender.bat" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -541,6 +544,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Framework\3rd\sproto\tools\" />
+    <Folder Include="Game\Logs\Client\" />
+    <Folder Include="Game\Logs\Server\" />
+    <Folder Include="Game\Resource\Config\" />
+    <Folder Include="Game\Startconf\Daily\" />
+    <Folder Include="Game\Startconf\Develop\" />
+    <Folder Include="Game\Startconf\Publish\" />
     <Folder Include="Test\Gateway\Logs\" />
     <Folder Include="Test\RPC\LinuxShell\" />
     <Folder Include="Test\RPC\Logs\Client\" />

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NetSprotoType;
 
-namespace SparkServer.Game.Service
+namespace SparkServer.Game.Process.Battle
 {
     class BattleTaskDispatcher : ServiceContext
     {
@@ -20,7 +20,7 @@ namespace SparkServer.Game.Service
             
             for (int i = 0; i < 8; i++)
             {
-                int serviceId = SparkServerUtility.NewService("SparkServer.Game.Service.BattleTaskConsumer");
+                int serviceId = SparkServerUtility.NewService("SparkServer.Game.Process.Battle.BattleTaskConsumer");
                 m_consumerList.Add(serviceId);
             }
 

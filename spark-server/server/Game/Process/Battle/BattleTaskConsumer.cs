@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NetSprotoType;
 using SparkServer.Framework.Utility;
 
-namespace SparkServer.Game.Service
+namespace SparkServer.Game.Process.Battle
 {
     class BattleTaskConsumer : ServiceContext
     {

@@ -344,6 +344,8 @@
     <None Include="Framework\Tools\sproto2cs\sprotodump\sprotodump.lua" />
     <None Include="Framework\Tools\sproto2cs\sprotodump\util.lua" />
     <None Include="Test\Gateway\Resource\Config\Startup.json" />
+    <None Include="Test\Gateway\WinCmd\BootClient.bat" />
+    <None Include="Test\Gateway\WinCmd\BootServer.bat" />
     <None Include="Test\RecvSkynetRequest\Logs\readme.md" />
     <None Include="Test\RecvSkynetRequest\Resource\Config\ClusterName.json" />
     <None Include="Test\RecvSkynetRequest\Resource\Config\Startup.json" />

@@ -23,6 +23,7 @@ namespace SparkServer.Framework.Service
         SocketDisconnected    = 2,
         RemoteError           = 3,
         ServiceRuntimeError   = 4,
+        UnknowRemoteNode      = 5,
     }
 
     // Spark Server context

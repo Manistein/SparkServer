@@ -95,7 +95,7 @@ namespace SparkServer.Network
                 session.Stop();
                 m_sessionDict.Remove(sessionId);
             }
-            m_onErrorHandle(opaque, sessionId, errorCode, "");
+            m_onErrorHandle(opaque, sessionId, errorCode, errorText);
         }
     }
 }

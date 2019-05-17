@@ -24,13 +24,13 @@ namespace SparkServer.Network
         private BufferPool m_bufferPool = new BufferPool();
 
         // error callback
-        private SessionErrorHandle m_onErrorHandle;
+        private TCPObjectErrorHandle m_onErrorHandle;
 
         // IO complete callback
         private ReadCompleteHandle m_onReadCompleteHandle;
         private ConnectCompleteHandle m_onConnectCompleteHandle;
 
-        public void Start(int opaque, SessionErrorHandle errorCallback, ReadCompleteHandle readCallback, ConnectCompleteHandle connectCallback)
+        public void Start(int opaque, TCPObjectErrorHandle errorCallback, ReadCompleteHandle readCallback, ConnectCompleteHandle connectCallback)
         {
             TCPSynchronizeContext.GetInstance();
 
@@ -88,14 +88,20 @@ namespace SparkServer.Network
 
         private void OnSessionError(int opaque, long sessionId, int errorCode, string errorText)
         {
+            string remoteEndPoint = "";
+
             Session session = null;
             m_sessionDict.TryGetValue(sessionId, out session);
             if (session != null)
             {
+                IPEndPoint ipEndPoint = session.GetRemoteEndPoint();
+                remoteEndPoint = ipEndPoint.ToString();
+
                 session.Stop();
                 m_sessionDict.Remove(sessionId);
+
+                m_onErrorHandle(opaque, sessionId, remoteEndPoint, errorCode, errorText);
             }
-            m_onErrorHandle(opaque, sessionId, errorCode, errorText);
         }
     }
 }

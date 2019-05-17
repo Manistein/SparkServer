@@ -12,6 +12,7 @@ using System.Net.Sockets;
 
 namespace SparkServer.Network
 {
+    public delegate void TCPObjectErrorHandle(int opaque, long sessionId, string remoteEndPoint, int errorCode, string errorText);
     public delegate void SessionErrorHandle(int opaque, long sessionId, int errorCode, string errorText);
     public delegate void ReadCompleteHandle(int opaque, long sessionId, byte[] bytes, int packetSize);
     public delegate void AcceptHandle(int opaque, long sessionId, string ip, int port);
@@ -30,7 +31,7 @@ namespace SparkServer.Network
         private BufferPool m_bufferPool = new BufferPool();
 
         // event handler
-        private SessionErrorHandle m_onErrorHandle;
+        private TCPObjectErrorHandle m_onErrorHandle;
         private ReadCompleteHandle m_onReadCompleteHandle;
         private AcceptHandle m_onAcceptHandle;
 
@@ -38,7 +39,7 @@ namespace SparkServer.Network
             int port, 
             int backlog,
             int opaque,
-            SessionErrorHandle errorCallback,
+            TCPObjectErrorHandle errorCallback,
             ReadCompleteHandle readCallback,
             AcceptHandle acceptCallback)
         {
@@ -100,14 +101,20 @@ namespace SparkServer.Network
 
         private void OnSessionError(int opaque, long sessionId, int errorCode, string errorText)
         {
+            string ipEndPoint = "";
+
             Session session = null;
             m_sessionDict.TryGetValue(sessionId, out session);
             if (session != null)
             {
+                IPEndPoint ipEP = session.GetRemoteEndPoint();
+                ipEndPoint = ipEP.ToString();
+
                 session.Stop();
                 m_sessionDict.Remove(sessionId);
+
+                m_onErrorHandle(opaque, sessionId, ipEndPoint, errorCode, errorText);
             }
-            m_onErrorHandle(opaque, sessionId, errorCode, errorText);
         }
 
         private void BeginAccept()
@@ -147,19 +154,19 @@ namespace SparkServer.Network
                     userToken.Port = remoteEndPoint.Port;
 
                     m_totalSessionId++;
-                    session.StartAsServer(socket, m_opaque, m_totalSessionId, m_bufferPool, OnSessionError, m_onReadCompleteHandle, userToken);
+                    session.StartAsServer(socket, m_opaque, m_totalSessionId, remoteEndPoint, m_bufferPool, OnSessionError, m_onReadCompleteHandle, userToken);
                     m_sessionDict.Add(m_totalSessionId, session);
 
                     m_onAcceptHandle(m_opaque, m_totalSessionId, userToken.IP, userToken.Port);
                 }
                 catch(Exception e)
                 {
-                    m_onErrorHandle(m_opaque, 0, 0, e.ToString());
+                    m_onErrorHandle(m_opaque, 0, "", 0, e.ToString());
                 }
             }
             else
             {
-                m_onErrorHandle(m_opaque, 0, (int)args.SocketError, "");
+                m_onErrorHandle(m_opaque, 0, "", (int)args.SocketError, "");
             }
 
             BeginAccept();

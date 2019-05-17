@@ -8,6 +8,7 @@
     connection 0 : integer
     errorCode  1 : integer
     errorText  2 : string
+	remoteEndPoint 3 : string
 }
 
 .SocketData {

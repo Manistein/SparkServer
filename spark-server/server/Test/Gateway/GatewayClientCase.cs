@@ -96,7 +96,7 @@ namespace SparkServer.Test.Gateway
             }
         }
 
-        private void OnSessionError(int opaque, long sessionId, int errorCode, string errorText)
+        private void OnSessionError(int opaque, long sessionId, string remoteEndPoint, int errorCode, string errorText)
         {
             m_isConnected = false;
             Console.WriteLine("OnSessionError sessionId:{0} errorCode:{1} errorText:{2}", sessionId, errorCode, errorText);

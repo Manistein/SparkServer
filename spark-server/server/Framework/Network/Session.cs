@@ -46,7 +46,7 @@ namespace SparkServer.Network
 
         private SessionErrorHandle m_onSessionError;
         private ConnectCompleteHandle m_onConnectCompleteHandle; // only for client session
-        private IPEndPoint m_serverEndPoint; // only for client session
+        private IPEndPoint m_remoteEndPoint;
         private string m_errorText = "";
         private bool m_isConnected = false;
 
@@ -75,6 +75,7 @@ namespace SparkServer.Network
         public void StartAsServer(Socket socket, 
             int opaque,
             long sessionId, 
+            IPEndPoint remoteEndPoint,
             BufferPool bufferPool, 
             SessionErrorHandle errorCallback, 
             ReadCompleteHandle readCallback,
@@ -83,6 +84,7 @@ namespace SparkServer.Network
             Init(socket, opaque, sessionId, bufferPool, errorCallback, readCallback, userToken);
             m_type = SessionType.Server;
             m_isConnected = true;
+            m_remoteEndPoint = remoteEndPoint;
 
             BeginRecv();
         }
@@ -99,7 +101,7 @@ namespace SparkServer.Network
         {
             Init(socket, opaque, sessionId, bufferPool, errorCallback, readCallback, userToken);
             m_type = SessionType.Client;
-            m_serverEndPoint = remoteEndPoint;
+            m_remoteEndPoint = remoteEndPoint;
             m_onConnectCompleteHandle = connectCallback;
 
             m_errorText = remoteEndPoint.ToString();
@@ -121,6 +123,11 @@ namespace SparkServer.Network
         public SessionType GetSessionType()
         {
             return m_type;
+        }
+
+        public IPEndPoint GetRemoteEndPoint()
+        {
+            return m_remoteEndPoint;
         }
 
         public bool Write(byte[] buffer)
@@ -181,7 +188,7 @@ namespace SparkServer.Network
 
         private void BeginConnect()
         {
-            m_writeEvent.RemoteEndPoint = m_serverEndPoint;
+            m_writeEvent.RemoteEndPoint = m_remoteEndPoint;
             bool willRaiseEvent = m_socket.ConnectAsync(m_writeEvent);
             if (!willRaiseEvent)
             {

@@ -4,6 +4,7 @@ using SparkServer.Framework.MessageQueue;
 using SparkServer.Framework.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -112,21 +113,15 @@ namespace SparkServer.Framework.Service.ClusterClient
         {
             NetSprotoType.SocketError error = new NetSprotoType.SocketError(param);
 
-            string node = "";
-            foreach(var pair in m_node2conn)
-            {
-                if (pair.Value == error.connection)
-                {
-                    node = pair.Key;
-                    break;
-                }
-            }
-
-            bool canFind = node != "";
+            long connectionId = 0;
+            bool canFind = m_node2conn.TryGetValue(error.remoteEndPoint, out connectionId);
+            
             // if connection already exist, that means queue of waitForRequest is empty, because 
             // it will send and clear after connect success
             if (canFind)
             {
+                Debug.Assert(connectionId == error.connection);
+
                 Dictionary<int, WaitForResponseRequest> waitForResponseRequests = null;
                 bool isExist = m_conn2sessions.TryGetValue(error.connection, out waitForResponseRequests);
                 if (isExist)
@@ -144,12 +139,12 @@ namespace SparkServer.Framework.Service.ClusterClient
                         ProcessRemoteResponse(remoteSession, null, RPCError.SocketDisconnected);
                     }
                     m_conn2sessions.Remove(error.connection);
-                    m_node2conn.Remove(node);
+                    m_node2conn.Remove(error.remoteEndPoint);
                 }
             }
             else
             {
-                string ipEndpoint = error.errorText;
+                string ipEndpoint = error.remoteEndPoint;
                 Queue<WaitForSendRequest> waitQueue = null;
                 bool isExist = m_waitForSendRequests.TryGetValue(ipEndpoint, out waitQueue);
                 if (isExist)

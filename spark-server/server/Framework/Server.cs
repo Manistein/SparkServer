@@ -226,12 +226,13 @@ namespace SparkServer.Framework
             }
         }
 
-        private void OnSessionError(int opaque, long sessionId, int errorCode, string errorText)
+        private void OnSessionError(int opaque, long sessionId, string remoteEndPoint, int errorCode, string errorText)
         {
             SocketError sprotoSocketError = new SocketError();
             sprotoSocketError.errorCode = errorCode;
             sprotoSocketError.errorText = errorText;
             sprotoSocketError.connection = sessionId;
+            sprotoSocketError.remoteEndPoint = remoteEndPoint;
 
             Message msg = new Message();
             msg.Source = 0;
@@ -337,7 +338,7 @@ namespace SparkServer.Framework
                             }
                             else
                             {
-                                OnSessionError(tcpObject.GetOpaque(), netpack.ConnectionId, (int)RPCError.SocketDisconnected, "Connection disconnected");
+                                LoggerHelper.Info(0, string.Format("Opaque:{0} ConnectionId:{1} ErrorText:{2}", tcpObject.GetOpaque(), netpack.ConnectionId, "Connection disconnected"));
                             }
                         } break;
                     default: break;

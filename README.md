@@ -56,16 +56,18 @@ chmod 755 *
 
 # build clean
 ./build.sh clean
+```
 
-# 编译SparkServer服务器
-# 进入C#项目文件夹，路径SparkServer/spark-server/
+* 编译SparkServer服务器
+* 进入C#项目文件夹，路径SparkServer/spark-server/
+```
 msbuild SparkServer.sln
 ```
 
-# 修改配置文件
+# 配置文件
 * 以运行SparkServer/spark-server/server/Test/SendSkynetRequest为demo，demo内容是SparkServer向skynet发起完整的RPC请求
 * 配置文件路径SparkServer/spark-server/server/Test/SendSkynetRequest/Resource/Config/ClusterName.json
-* 修改成自己的ip地址
+* 修改配置文件中的ip
 
 # 启动skynet测试节点
 ```

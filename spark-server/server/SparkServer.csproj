@@ -125,6 +125,7 @@
     <Compile Include="Framework\Network\TCPServer.cs" />
     <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
     <Compile Include="Framework\Utility\SparkServer.cs" />
+    <Compile Include="Game\Process\TestSender\Boot.cs" />
     <Compile Include="Game\Process\TestSender\Sender.cs" />
     <Compile Include="Game\Resource\RPCProtoCS\BattleTaskConsumer.cs" />
     <Compile Include="Game\Resource\RPCProtoCS\BattleTaskDispatcher.cs" />

@@ -197,12 +197,13 @@ namespace SparkServer.Framework
 
         private void ThreadWorker()
         {
+            AutoResetEvent autoResetEvent = new AutoResetEvent(false);
             while(true)
             {
                 int serviceId = m_globalMQ.Pop();
                 if (serviceId == 0)
                 {
-                    Thread.Sleep(1);
+                    autoResetEvent.WaitOne(1);
                 }
                 else
                 {

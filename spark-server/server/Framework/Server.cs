@@ -70,7 +70,7 @@ namespace SparkServer.Framework
 
             if (m_bootConfig.ContainsKey("Gateway"))
             {
-                string gatewayEndpoint = m_bootConfig["Gateway"]["host"].ToString();
+                string gatewayEndpoint = m_bootConfig["Gateway"]["Host"].ToString();
                 string[] ipResult = gatewayEndpoint.Split(':');
                 m_gateIp = ipResult[0];
                 m_gatePort = Int32.Parse(ipResult[1]);
@@ -112,8 +112,8 @@ namespace SparkServer.Framework
 
         private void InitGateway()
         {
-            string gatewayClass = m_bootConfig["Gateway"]["class"].ToString();
-            string gatewayName = m_bootConfig["Gateway"]["name"].ToString();
+            string gatewayClass = m_bootConfig["Gateway"]["Class"].ToString();
+            string gatewayName = m_bootConfig["Gateway"]["Name"].ToString();
 
             m_tcpGate = new TCPServer();
             m_tcpObjectContainer.Add(m_tcpGate);

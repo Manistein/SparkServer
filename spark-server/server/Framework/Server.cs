@@ -137,9 +137,24 @@ namespace SparkServer.Framework
 
             // create logger service second
             Logger_Init loggerInit = new Logger_Init();
-            if (m_bootConfig.ContainsKey("Logger") && Directory.Exists(m_bootConfig["Logger"].ToString()))
+            if (m_bootConfig.ContainsKey("Logger"))
             {
-                loggerInit.logger_path = m_bootConfig["Logger"].ToString();
+                if (Directory.Exists(m_bootConfig["Logger"].ToString()))
+                {
+                    loggerInit.logger_path = Path.GetFullPath(m_bootConfig["Logger"].ToString());
+                }
+                else
+                {
+                    DirectoryInfo di = Directory.CreateDirectory(m_bootConfig["Logger"].ToString());
+                    if (di.Exists)
+                    {
+                        loggerInit.logger_path = Path.GetFullPath(m_bootConfig["Logger"].ToString());
+                    }
+                    else
+                    {
+                        loggerInit.logger_path = "../";
+                    }
+                }
             }
             else
             {

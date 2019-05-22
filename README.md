@@ -54,59 +54,14 @@ msbuild SparkServer.sln
 * libreadline7 libreadline-dev
 * zip
 
-所有的测试用例，均在测试目录下有一个LinuxShell目录，要启动对应的测试用例，先运行BootServer.sh脚本，再执行BootClient.sh脚本。如果遇到shell脚本因为文件格式不正确无法执行的情况，可以安装dos2unix工具，在LinuxShell目录下执行
+如果你使用的是Ubuntu系统，可以直接使用TestDependency/shell/目录下的installenv.sh脚本，一键安装环境和工具。在完成依赖项安装以后，需要依次执行TestDependency/shell目录下的这些脚本：  
+
+* installjemalloc.sh
+* build.sh all
+
+先安装jemalloc，再对skynet进行编译。所有的测试用例，均在测试目录下有一个LinuxShell目录，要启动对应的测试用例，先运行BootServer.sh脚本，再执行BootClient.sh脚本。如果遇到shell脚本因为文件格式不正确无法执行的情况，可以安装dos2unix工具，在LinuxShell目录下执行
 ```
 dos2unix *
 ```
-指令来将文件转成unix文件格式。
+指令来将文件转成unix文件格式。如果你想清理skynet的编译文件，可以执行./build.sh clean指令进行清理。
 
-
-# 运行初始化脚本
-```
-./installenv.sh
-```
-
-# 安装jemalloc
-```
-./installjemalloc.sh
-```
-
-# 编译和清理编译
-```
-# build all
-./build.sh all
-
-# build clean
-./build.sh clean
-```
-
-# 启动服务器
-```
-./sparkserver.sh start BattleServer
-```
-
-# 关闭服务器
-```
-./sparkserver.sh stop
-```
-
-# 启动客户端
-```
-# 启动skynet测试客户端
-./test start battle-client
-```
-
-# 关闭客户端
-```
-./test stop battle-client
-```
-
-# 开启网络库Example
-进入battle-server\battle-server\bin\Debug\目录，执行如下命令
-```
-# 开启网络库服务端使用Example
-mono battle-server.exe TCPServerExample
-
-# 开启网络库客户端使用Example
-mono battle-server.exe TCPClientExample
-```

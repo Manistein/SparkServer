@@ -24,10 +24,10 @@ git clone https://github.com/Manistein/SparkServer.git
 用Visual Studio打开spark-server/SparkServer.sln工程，[Build] -> [Rebuild Solution]
 
 #### Linux平台
-* msbuild SparkServer.sln
+msbuild SparkServer.sln
 
 # 运行Test Case
-测试用例全部放置在spark-server/server/Test目录下，由于skynet官方版本不支持在windows上运行，因此和skynet进行交互测试的RecvSkynetRequest和SendSkynetRequest两个测试用例需要在Linux或Mac环境下运行。其他测试用例可以在Windows上、Linux和Mac上运行。目前测试用例包括：  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;测试用例全部放置在spark-server/server/Test目录下，由于skynet官方版本不支持在windows上运行，因此和skynet进行交互测试的RecvSkynetRequest和SendSkynetRequest两个测试用例需要在Linux或Mac环境下运行。其他测试用例可以在Windows上、Linux和Mac上运行。目前测试用例包括：  
 
 * Gateway：实现了测试客户端，用来模拟客户端和服务器通信，测试数据包收发的情况
 * RPC：测试SparkServer集群的RPC机制，包含RPC调用测试
@@ -36,16 +36,28 @@ git clone https://github.com/Manistein/SparkServer.git
 * TestDependency：测试用到的依赖工程
 
 #### Windows平台
-能在Windows上运行的用例，均在测试用例的目录中拥有一个WinCmd目录，打开WinCmd目录后，先运行BootServer.bat脚本启动服务器，再运行BootClient.bat脚本启动客户端。每个测试用例的目录下均有一个log目录。
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;能在Windows上运行的用例，均在测试用例的目录中拥有一个WinCmd目录，打开WinCmd目录后，先运行BootServer.bat脚本启动服务器，再运行BootClient.bat脚本启动客户端。每个测试用例的目录下均有一个log目录。如果你希望在Visual Studio上运行测试用例，需要执行如下操作：  
+
+* 用Visual Studio打开SparkServer.sln工程
+* 在Solution Explorer中右键SparkServer工程，选择Properties
+* 选择Debug标签，在Command line arguments中，填入启动脚本中的参数即可
 
 #### Linux平台
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;要在Linux上运行所有的测试用例，需要预先安装一些工具，包括：  
+
+* gcc
+* make
+* cmake
+* python
+* autoconf
+* libreadline7 libreadline-dev
+* zip
+
 所有的测试用例，均在测试目录下有一个LinuxShell目录，要启动对应的测试用例，先运行BootServer.sh脚本，再执行BootClient.sh脚本。如果遇到shell脚本因为文件格式不正确无法执行的情况，可以安装dos2unix工具，在LinuxShell目录下执行
 ```
 dos2unix *
 ```
-指令来将文件转成unix文件格式。  
-
-
+指令来将文件转成unix文件格式。
 
 
 # 运行初始化脚本

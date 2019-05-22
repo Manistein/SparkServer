@@ -1,44 +1,52 @@
 # Overview
-SparkServer是参考skynet设计的一个服务器框架，使用的是.net平台，可以在Linux、Windows、MacOS上运行。该框架功能包括：
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SparkServer是一个基于Actor模型的服务端框架，使用了微软的.Net Framework。SparkServer最初的目标，是服务端能够和Unity客户端共享一些逻辑代码，进而节约开发成本，同时能够无缝整合到[skynet](https://github.com/cloudwu/skynet)的集群机制中。SparkServer深度参照了skynet的设计，如果你熟悉skynet，那么同样可以很快理解SparkServer的设计机制。目前为止，SparkServer已经可以做到和skynet节点联合组网，SparkServer采用了skynet的集群机制的设计和实现，只需要遵循skynet cluster机制的使用方式，即可向SparkServer节点发起RPC请求。同时我们也可以很方便地从SparKServer节点向skynet节点发起RPC请求。SparkServer不仅可以无缝整合到skynet的cluster机制中，也可以独自组网，构建只有SparkServer节点的集群。  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SparkServer可以在Windows上运行，同时也可以借助Mono在Linux平台上运行。如果你有兴趣进一步了解SparkServer的设计背景，和一些内部设计机制，可以参考这篇文章[C#服务端框架设计与实现](https://manistein.github.io/blog/post/server/csharp/csharp%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/)
 
-* 有完整的RPC机制
-* 基于Proactor模型的网络库
-* 消息调度机制，可以自定义服务处理逻辑
-* 日志服务
-* 可以自行组网，或者和skynet通讯
+# 运行的目标环境
+* Linux
+* Windows
+* MacOS
 
-# 架构文档
-[C#服务端框架设计与实现](https://manistein.github.io/blog/post/server/csharp/csharp%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/)
-
-# 测试通过的环境
-* Ubuntu18.04
-* Win7
-* Win10
-
-# 需要预先安装的环境(以下安装示例是基于Ubuntu环境)
-* [安装Mono开发运行环境](https://www.mono-project.com/download/stable/#download-lin)
+# 编译环境安装
+#### Windows平台
+* Visual Studio 2017或以上版本
+#### Linux平台
+* [安装Mono开发运行环境(version 5.18.1.0或以上)](https://www.mono-project.com/download/stable/#download-lin)
 * 安装dos2unix工具
-```
-# install dos2unix on ubuntu
-sudo apt-get install dos2unix
-```
 
 # 获取仓库
 ```
-# clone to ubuntu
-sudo git clone https://github.com/Manistein/SparkServer.git
+git clone https://github.com/Manistein/SparkServer.git
 ```
 
-#编译skynet服务器
-* 进入shell目录，shell目录在SparkServer/spark-server/server/Test/TestDependency/shell/
-* 将shell文件的格式转换成linux文件格式
+# 编译工程
+#### Windows平台
+用Visual Studio打开spark-server/SparkServer.sln工程，[Build] -> [Rebuild Solution]
+
+#### Linux平台
+* msbuild SparkServer.sln
+
+# 运行Test Case
+测试用例全部放置在spark-server/server/Test目录下，由于skynet官方版本不支持在windows上运行，因此和skynet进行交互测试的RecvSkynetRequest和SendSkynetRequest两个测试用例需要在Linux或Mac环境下运行。其他测试用例可以在Windows上、Linux和Mac上运行。目前测试用例包括：  
+
+* Gateway：实现了测试客户端，用来模拟客户端和服务器通信，测试数据包收发的情况
+* RPC：测试SparkServer集群的RPC机制，包含RPC调用测试
+* RecvSkynetRequest：接收来自skynet节点的请求，并回应的例子
+* SendSkynetRequest：向skynet节点发送请求，并接收回应的例子
+* TestDependency：测试用到的依赖工程
+
+#### Windows平台
+能在Windows上运行的用例，均在测试用例的目录中拥有一个WinCmd目录，打开WinCmd目录后，先运行BootServer.bat脚本启动服务器，再运行BootClient.bat脚本启动客户端。每个测试用例的目录下均有一个log目录。
+
+#### Linux平台
+所有的测试用例，均在测试目录下有一个LinuxShell目录，要启动对应的测试用例，先运行BootServer.sh脚本，再执行BootClient.sh脚本。如果遇到shell脚本因为文件格式不正确无法执行的情况，可以安装dos2unix工具，在LinuxShell目录下执行
 ```
 dos2unix *
 ```
-* 添加可执行权限
-```
-chmod 755 *
-```
+指令来将文件转成unix文件格式。  
+
+
+
 
 # 运行初始化脚本
 ```
@@ -59,140 +67,33 @@ chmod 755 *
 ./build.sh clean
 ```
 
-* 编译SparkServer服务器
-* 进入C#项目文件夹，路径SparkServer/spark-server/
-```
-msbuild SparkServer.sln
-```
-
-# 配置文件
-* 以运行SparkServer/spark-server/server/Test/SendSkynetRequest为demo，demo内容是SparkServer向skynet发起完整的RPC请求
-* 配置文件路径SparkServer/spark-server/server/Test/SendSkynetRequest/Resource/Config/ClusterName.json
-* 修改配置文件中的ip
-
-# 启动skynet测试节点
-```
-./test.sh start ../SendSkynetRequest/SkynetReceiver
-```
-
-# 关闭skynet节点
-```
-./test.sh stop skynet
-```
-
 # 启动服务器
-* 进入sparkserver的bin目录，路径SparkServer/spark-server/server/bin/Debug
 ```
-nohup mono spark-server.exe TestCases SendSkynetRequest &
+./sparkserver.sh start BattleServer
 ```
 
 # 关闭服务器
 ```
-kill -9 `ps aux | grep "mono" | grep -v tail | grep -v grep | awk '{print $2}'`
+./sparkserver.sh stop
 ```
 
-# 配置文件说明
+# 启动客户端
 ```
-{
-    "ClusterConfig": "../../Test/SendSkynetRequest/Resource/Config/ClusterName.json",
-    "ClusterName": "testclient",
-    "ThreadNum": 4,
-    "Logger" : "../../Game/Logs/Client/"
-}
-```
-* ClusterConfig包含所有的cluster节点的IP和port
-* ClusterName是当前cluster节点的名称
-* ThreadNum是工作线程的数量
-* Logger是日志存放的路径
-
-# SparkServer启动参数说明
-* 第一个参数是启动模式，分别是有参初始化和无参初始化
-
-* 有参初始化(第一个参数是SparkServer)，第二个参数是启动的类名，第三个参数是启动时加载的配置文件路径
-```
-nohup mono spark-server.exe SparkServer SparkServer.Game.Process.TestSender.Sender ../../Game/Startconf/LocalSvr/TestSender/BootConfig &
-```
-* 无参初始化(第一个参数是TestCases)，第二个参数是注册过的测试demo名字，在SparkServer/spark-server/server/Test/TestCases.cs中注册
-```
-nohup mono spark-server.exe TestCases SendSkynetRequest &
-```
-* 该模式下启动类名和配置文件路径是硬编码模式，如下
-```
-private void TestRecvSkynetRequest()
-{
-    BootServices boot = delegate ()
-    {
-        SparkServerUtility.NewService("SparkServer.Test.RecvSkynetRequest.SkynetMessageReceiver", "RecvSkynetSend");
-    };
-    Server server = new Server();
-    server.Run("../../Test/RecvSkynetRequest/Resource/Config/Startup.json", boot);
-}
+# 启动skynet测试客户端
+./test start battle-client
 ```
 
-# 注册服务函数
-* 函数原型，NewService函数的第二个参数是给第一个参数的类注册服务名
+# 关闭客户端
 ```
-public static int NewService(string serviceClass, string serviceName);
-```
-* 调用方式
-```
-SparkServerUtility.NewService("SparkServer.Test.SendSkynetRequest.SkynetMessageSender", "SendSkynetMsg");
-```
-* 给当前服务注册服务函数
-* 函数原型
-```
-protected void RegisterServiceMethods(string methodName, Method method);
-```
-* 调用方式
-```
-RegisterServiceMethods("OnProcessRequest", OnProcessRequest);
+./test stop battle-client
 ```
 
-# 向已注册的服务发送消息
-* 函数原型
+# 开启网络库Example
+进入battle-server\battle-server\bin\Debug\目录，执行如下命令
 ```
-protected void Send(string destination, string method, byte[] param);
-```
-* 调用方式
-```
-byte[] bytes = new byte[128];
-Send("SendSkynetMsg", "OnProcessRequest", bytes);
-```
+# 开启网络库服务端使用Example
+mono battle-server.exe TCPServerExample
 
-# 向请求服务返回回应包
-```
-private void OnProcessRequest(int source, int session, string method, byte[] param)
-{
-    SkynetMessageReceiver_OnProcessRequest request = new SkynetMessageReceiver_OnProcessRequest(param);
-    LoggerHelper.Info(m_serviceAddress, string.Format("skynet request_count:{0}", request.request_text));
-
-    if (session > 0)
-    {
-        SkynetMessageReceiver_OnProcessRequestResponse response = new SkynetMessageReceiver_OnProcessRequestResponse();
-        response.request_count = request.request_count;
-        response.request_text = request.request_text;
-
-        DoResponse(source, method, response.encode(), session);
-    }
-}
-```
-
-# 远程RPC调用
-```
-SkynetMessageSender_OnProcessRequest request = new SkynetMessageSender_OnProcessRequest();
-request.request_count = 123456;
-request.request_text = "hello skynet";
-RemoteCall("testserver", ".test_send_skynet", "send_skynet", request.encode(), null, OnProcessResponse);
-```
-
-# 设置定时器
-```
-SSContext sSContext = new SSContext();
-this.Timeout(sSContext, 10, TimeoutCallback);
-```
-
-# 启动Gateway
-* Gateway也是TestCase中的一个demo
-```
-nohup mono spark-server.exe TestCases GatewayCase &
+# 开启网络库客户端使用Example
+mono battle-server.exe TCPClientExample
 ```

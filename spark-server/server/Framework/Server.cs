@@ -70,7 +70,7 @@ namespace SparkServer.Framework
 
             if (m_bootConfig.ContainsKey("Gateway"))
             {
-                string gatewayEndpoint = m_bootConfig["Gateway"]["host"].ToString();
+                string gatewayEndpoint = m_bootConfig["Gateway"]["Host"].ToString();
                 string[] ipResult = gatewayEndpoint.Split(':');
                 m_gateIp = ipResult[0];
                 m_gatePort = Int32.Parse(ipResult[1]);
@@ -112,8 +112,8 @@ namespace SparkServer.Framework
 
         private void InitGateway()
         {
-            string gatewayClass = m_bootConfig["Gateway"]["class"].ToString();
-            string gatewayName = m_bootConfig["Gateway"]["name"].ToString();
+            string gatewayClass = m_bootConfig["Gateway"]["Class"].ToString();
+            string gatewayName = m_bootConfig["Gateway"]["Name"].ToString();
 
             m_tcpGate = new TCPServer();
             m_tcpObjectContainer.Add(m_tcpGate);
@@ -137,9 +137,24 @@ namespace SparkServer.Framework
 
             // create logger service second
             Logger_Init loggerInit = new Logger_Init();
-            if (m_bootConfig.ContainsKey("Logger") && Directory.Exists(m_bootConfig["Logger"].ToString()))
+            if (m_bootConfig.ContainsKey("Logger"))
             {
-                loggerInit.logger_path = m_bootConfig["Logger"].ToString();
+                if (Directory.Exists(m_bootConfig["Logger"].ToString()))
+                {
+                    loggerInit.logger_path = Path.GetFullPath(m_bootConfig["Logger"].ToString());
+                }
+                else
+                {
+                    DirectoryInfo di = Directory.CreateDirectory(m_bootConfig["Logger"].ToString());
+                    if (di.Exists)
+                    {
+                        loggerInit.logger_path = Path.GetFullPath(m_bootConfig["Logger"].ToString());
+                    }
+                    else
+                    {
+                        loggerInit.logger_path = "../";
+                    }
+                }
             }
             else
             {
@@ -197,12 +212,13 @@ namespace SparkServer.Framework
 
         private void ThreadWorker()
         {
+            AutoResetEvent autoResetEvent = new AutoResetEvent(false);
             while(true)
             {
                 int serviceId = m_globalMQ.Pop();
                 if (serviceId == 0)
                 {
-                    Thread.Sleep(1);
+                    autoResetEvent.WaitOne(1);
                 }
                 else
                 {

@@ -17,7 +17,7 @@ namespace SparkServer.Framework.Service.Gateway
         {
             base.Init();
 
-            Gateway_Init gatewayInit = new Gateway_Init();
+            Gateway_Init gatewayInit = new Gateway_Init(param);
             SetTCPObjectId((int)gatewayInit.tcp_server_id);
 
             RegisterSocketMethods("SocketAccept", SocketAccept);

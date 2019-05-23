@@ -85,6 +85,7 @@ dos2unix *
 * Logger字段：日志输出的路径，一般是exe所在的目录作为工作目录
 * ClusterConfig字段：用于指定集群配置的路径
 * ClusterName字段：用于指定被启动的进程，在集群中的进程名称，在跨进程的RPC调用中发挥关键作用
+* ThreadNum字段：指定worker线程会被创建多少条，默认为8条，一般建议worker线程的数量和cpu核心数相当。
 
 # 创建新服务
 在SparkServer中，我们将执行业务逻辑的实体，称之为服务。SparkServer提供了一个ServiceContext类作为所有服务的基类，所有用户自定义的服务都需要继承这个类，它为我们提供了消息回调的入口，RPC调用的接口以及定时器设置等基础功能。SparkServer的Game目录，提供了一个Example工程，他包含了我推荐的项目目录组织形式。Framework目录包含了SparkServer的基础框架逻辑，对于基于SparkServer的工程开发，最好的方式是，在工程下与Framework目录同级的目录，新建一个目录，将所有的代码和资源都放置在这里，方便管理，避免侵入框架本身。正如上面所说，Game目录的Example提供了一个范例。  
@@ -123,6 +124,20 @@ namespace SparkServer.Game.Process.TestSender
 
 ```
 SparkServerUtility.NewService("SparkServer.Game.Process.TestSender.Boot");
+```
+
+我们的NewService函数有多个重载版本，他们分别是：  
+
+```
+// SparkServer.cs
+// @serviceClass:指明第一个要被启动的服务，形式是Namespace.ClassName拼成的字符串
+// @serviceName:服务的别名，在RPC调用，用于指明目标服务时使用
+// @param:初始化参数，如果一个服务依赖外部参数进行初始化，那么需要在该服务对应的.sproto文件中定义对应的结构，序列化以后，作为param参数传入
+
+public static int NewService(string serviceClass);
+public static int NewService(string serviceClass, byte[] param);
+public static int NewService(string serviceClass, string serviceName);
+public static int NewService(string serviceClass, string serviceName, byte[] param);
 ```
 
 实际上，进程的第一个启动服务是不需要我们自己去调用这个函数的，我们需要在启动命令中，指定要启动的服务，以及配置路径即可，比如我们要启动Game这个Example中Battle进程下的BattleTaskDispatcher服务，则需要执行如下命令：  
@@ -227,3 +242,18 @@ protected override void Init(byte[] param)
 }
 ...
 ```
+
+# 向其他服务发送消息
+在完成了服务创建和函数注册以后，现在要阐述的内容是，一个服务如何向另一个服务发出请求，发起RPC请求的方式有两种，一种是不需要对方返回回应，一种需要对方返回回应消息。我们的ServiceContext服务提供了两种接口，他们分别是：  
+
+```
+// 向远程服务发出请求，但不需要回应
+protected void Send(int destination, string method, byte[] param);
+protected void Send(string destination, string method, byte[] param);
+
+// 向远程服务发出请求，并且需要回应
+protected void Call(int destination, string method, byte[] param, SSContext context, RPCCallback cb);
+protected void Call(string destination, string method, byte[] param, SSContext context, RPCCallback cb)
+```
+
+不论是Send还是Call，他们都有两个版本，一个是指明被调用服务的地址，还有一个则是指定服务的名称，我们在调用SparkServerUtility.NewService时，有一个参数是传入服务名称，而这个服务名称就是服务的别名，在RPC请求的时候，如果一个服务有注册别名，那么Send和Call函数可以将这个别名作为第一个参数，将请求发给目标服务。具体的使用方式，可以参照Game目录下给的的Example。

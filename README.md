@@ -186,4 +186,44 @@ namespace SparkServer.Game.Process.Battle
     param  1 : string
 }
 ```
-我们可以看到，定义的结构中，需要以‘.’作为起点，然后服务类名和函数名通过"_"来进行拼接，花括号内部就是该函数要使用到的参数名和类型了。在完成定义以后，我们需要通过Resource目录下的sproto2cs.bat工具，将schema文件转化成.cs文件，在将其添加到工程中以后，我们就可以使用它了。上面所示的示例代码展示了如何将参数反序列化的流程，并访问其中的域。
+我们可以看到，定义的结构中，需要以‘.’作为起点，然后服务类名和函数名通过"_"来进行拼接，花括号内部就是该函数要使用到的参数名和类型了。在完成定义以后，我们需要通过Resource目录下的sproto2cs.bat工具，将schema文件转化成.cs文件，在将其添加到工程中以后，我们就可以使用它了。上面所示的示例代码展示了如何将参数反序列化的流程，并访问其中的域。  
+
+这里还需要强调的一点则是，每个服务被创建后，接收的第一消息一定是要求调用Init函数的消息，前面我们也提到过，Init函数分为有参和无参两种类型，如果我们一个服务的初始化依赖外部参数，那么就需要为这个服务传入参数，相对应的，我们需要在对应服务的.sproto文件中，定义Init函数要用到的参数格式。现在以我们进行集群通信处理的ClusterClient服务为例，由于ClusterClient服务的初始化依赖外部参数，因此我们需要在ClusterClient.sproto文件中定义Init函数的param参数结构：  
+
+```
+.ClusterClient_Init {
+    cluster_config 0 : string
+    tcp_client_id  1 : integer
+}
+```
+
+在完成定义和生成以后，我们创建服务实例之前，首先要创建一个ClusterClient_Init的结构，设置好对应的参数，序列化以后，将结果作为NewService的最后一个参数，传入，于是有：  
+
+```
+ClusterServer_Init clusterServerInit = new ClusterServer_Init();
+clusterServerInit.tcp_server_id = m_clusterTCPServer.GetObjectId();
+int clusterServerId = SparkServerUtility.NewService("SparkServer.Framework.Service.ClusterServer.ClusterServer", 
+    "clusterServer", 
+    clusterServerInit.encode());
+```
+
+最后，我们只需在ClusterClient服务的Init函数中，将param反序列化出来，再进行初始化即可：
+
+```
+...
+protected override void Init(byte[] param)
+{
+    base.Init();
+
+    ClusterClient_Init init = new ClusterClient_Init(param);
+    SetTCPObjectId((int)init.tcp_client_id);
+    ParseClusterConfig(init.cluster_config);
+
+    RegisterSocketMethods("SocketConnected", SocketConnected);
+    RegisterSocketMethods("SocketError", SocketError);
+    RegisterSocketMethods("SocketData", SocketData);
+
+    RegisterServiceMethods("Request", Request);
+}
+...
+```

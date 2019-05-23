@@ -256,4 +256,17 @@ protected void Call(int destination, string method, byte[] param, SSContext cont
 protected void Call(string destination, string method, byte[] param, SSContext context, RPCCallback cb)
 ```
 
-不论是Send还是Call，他们都有两个版本，一个是指明被调用服务的地址，还有一个则是指定服务的名称，我们在调用SparkServerUtility.NewService时，有一个参数是传入服务名称，而这个服务名称就是服务的别名，在RPC请求的时候，如果一个服务有注册别名，那么Send和Call函数可以将这个别名作为第一个参数，将请求发给目标服务。具体的使用方式，可以参照Game目录下给的的Example。
+不论是Send还是Call，他们都有两个版本，一个是指明被调用服务的地址，还有一个则是指定服务的名称，我们在调用SparkServerUtility.NewService时，有一个参数是传入服务名称，而这个服务名称就是服务的别名，在RPC请求的时候，如果一个服务有注册别名，那么Send和Call函数可以将这个别名作为第一个参数，将请求发给目标服务。具体的使用方式，可以参照Game/Process/Battle进程中，BattleTaskDispatcher服务如何向BattleTaskDispatcher服务转发消息的例子。
+
+# 向请求服务返回回应包
+如果请求服务通过Call函数，对自己发出请求，那么在完成处理以后，需要将结果返回给请求者，ServiceContext类给我们提供了一个DoResponse的函数，它的定义如下所示：  
+
+```
+// @ destination:请求者的地址
+// @ method:本服务被调用的方法名
+// @ param:经过序列化的返回参数
+// @ session:请求者的session
+protected void DoResponse(int destination, string method, byte[] param, int session);
+```
+
+为什么这里，请求者服务需要一个session？因为请求者可能要发出多个Call请求，而每次Call的时候又有自己独立的上下文环境，为了识别哪个返回对应哪个请求，我们需要为每个请求生成唯一的session id，在被请求方处理完请求时，需要将这个session带回，以方便请求者找回对应的上下文环境。具体的使用，可以参照Game/Process/Battle中，BattleTaskComsumer服务如何向BattleTaskDispatcher服务返回回应的例子。

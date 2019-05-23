@@ -137,3 +137,53 @@ mono spark-server.exe SparkServer SparkServer.Game.Process.Battle.BattleTaskDisp
 
 spark-server.exe是编译好的可执行文件，后面的SparkServer参数指明了，启动这个进程，需要指明初始化服务、启动配置和服务名称。SparkServer.Game.Process.Battle.BattleTaskDispatcher这个参数，指明了第一个被启动的服务是哪个，紧随其后的就是启动配置，最后是第一个被启动服务的名称。  
 
+# 注册服务函数
+我们创建一个服务以后，需要为服务定义回调函数，即接收其他服务发送的请求或通知，因此需要为这些请求或通知定义对应的函数。定义的方式也非常简单，所有要被请求的功能函数，需要遵守固定的函数签名：  
+
+```
+delegate void Method(int source, int session, string method, byte[] param);
+```
+
+下面是一个战斗任务消费的服务，定义了响应战斗请求的函数，这个函数在服务初始化阶段就完成注册：  
+
+```
+namespace SparkServer.Game.Process.Battle
+{
+    class BattleTaskConsumer : ServiceContext
+    {
+        protected override void Init()
+        {
+            base.Init();
+
+            RegisterServiceMethods("OnBattleRequest", OnBattleRequest);
+        }
+
+        private void OnBattleRequest(int source, int session, string method, byte[] param)
+        {
+            BattleTaskConsumer_OnBattleRequest request = new BattleTaskConsumer_OnBattleRequest(param);
+
+            // TODO Logic
+            LoggerHelper.Info(m_serviceAddress, request.param);
+
+            BattleTaskConsumer_OnBattleRequestResponse response = new BattleTaskConsumer_OnBattleRequestResponse();
+            response.method = "OnBattleRequest";
+            response.param = request.param;
+            DoResponse(source, response.method, response.encode(), session);
+        }
+    }
+}
+```
+注册服务函数，我们通过RegisterServiceMethods函数来进行，我们需要对函数取一个别名，方便其他服务发起RPC调用的时候，来指明希望调用的函数是哪个。由于我们所有的请求响应函数，都采用统一函数签名，而不同的函数需要传入的参数又各不相同，因此这里的处理方式是将参数序列化为byte数组param，并且在响应函数中，对param进行反序列化获得最终的结构。我们序列化和反序列化的工具是使用sproto，他要求被序列化和反序列化的结构，需要定义一个schema文件，具体的方式是，我们需要为每一个被创建的服务，创建一个sproto的schema文件，如我们的Game Example中，在Game/Resource/RPCProtoSchema目录下创建一个与服务同名的sproto文件，BattleTaskConsumer.sproto，然后在.sproto文件中，定义对应函数的结构，结构名称为.ClassName_MethodName的方式，如：  
+
+```
+.BattleTaskConsumer_OnBattleRequest {
+    method 0 : string
+    param  1 : string
+}
+
+.BattleTaskConsumer_OnBattleRequestResponse {
+    method 0 : string
+    param  1 : string
+}
+```
+我们可以看到，定义的结构中，需要以‘.’作为起点，然后服务类名和函数名通过"_"来进行拼接，花括号内部就是该函数要使用到的参数名和类型了。在完成定义以后，我们需要通过Resource目录下的sproto2cs.bat工具，将schema文件转化成.cs文件，在将其添加到工程中以后，我们就可以使用它了。上面所示的示例代码展示了如何将参数反序列化的流程，并访问其中的域。

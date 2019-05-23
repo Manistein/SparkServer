@@ -347,6 +347,8 @@
     <None Include="Framework\Tools\sproto2cs\sprotodump\serpent.lua" />
     <None Include="Framework\Tools\sproto2cs\sprotodump\sprotodump.lua" />
     <None Include="Framework\Tools\sproto2cs\sprotodump\util.lua" />
+    <None Include="Test\Gateway\LinuxShell\BootClient.sh" />
+    <None Include="Test\Gateway\LinuxShell\BootServer.sh" />
     <None Include="Test\Gateway\Resource\Config\Startup.json" />
     <None Include="Test\Gateway\WinCmd\BootClient.bat" />
     <None Include="Test\Gateway\WinCmd\BootServer.bat" />

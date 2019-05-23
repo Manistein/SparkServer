@@ -85,3 +85,55 @@ dos2unix *
 * Logger字段：日志输出的路径，一般是exe所在的目录作为工作目录
 * ClusterConfig字段：用于指定集群配置的路径
 * ClusterName字段：用于指定被启动的进程，在集群中的进程名称，在跨进程的RPC调用中发挥关键作用
+
+# 创建新服务
+在SparkServer中，我们将执行业务逻辑的实体，称之为服务。SparkServer提供了一个ServiceContext类作为所有服务的基类，所有用户自定义的服务都需要继承这个类，它为我们提供了消息回调的入口，RPC调用的接口以及定时器设置等基础功能。SparkServer的Game目录，提供了一个Example工程，他包含了我推荐的项目目录组织形式。Framework目录包含了SparkServer的基础框架逻辑，对于基于SparkServer的工程开发，最好的方式是，在工程下与Framework目录同级的目录，新建一个目录，将所有的代码和资源都放置在这里，方便管理，避免侵入框架本身。正如上面所说，Game目录的Example提供了一个范例。  
+
+要新建一个服务，首先要创建一个继承ServiceContext的类，如下所示，我们定义了一个用于启动其他服务的Boot服务：  
+
+```
+using SparkServer.Framework.Service;
+using SparkServer.Framework.Utility;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SparkServer.Game.Process.TestSender
+{
+    class Boot : ServiceContext
+    {
+        protected override void Init()
+        {
+            base.Init();
+
+            for (int i = 0; i < 100; i ++)
+            {
+                SparkServerUtility.NewService("SparkServer.Game.Process.TestSender.Sender");
+            }
+        }
+    }
+}
+```
+
+定义一个服务，有个非常重要的函数便是负责初始化的Init函数，我们的Init初始化函数分为两类，一种是有参，它传入一个byte[]类型的参数。一种是无参初始化函数，也就是说这种初始化不依赖任何外部参数。Init函数需要重载，为了保证线程安全，SparkServer的服务在创建时，会被push一个消息，这个消息在消费时会调用Init函数执行初始化操作，由于创建服务的线程和执行Init初始化逻辑的线程很可能不一样，这种方式避免了服务在未完成初始化的情况下，开始消费其他服务发送过来的消息。  
+
+启动一个定义好的服务也非常简单，我们需要借助SparkServerUtility库的NewService函数去启动服务，比如我们要启动上面定义的Boot服务，那么启动它的逻辑，将是如下所示的代码：  
+
+```
+SparkServerUtility.NewService("SparkServer.Game.Process.TestSender.Boot");
+```
+
+实际上，进程的第一个启动服务是不需要我们自己去调用这个函数的，我们需要在启动命令中，指定要启动的服务，以及配置路径即可，比如我们要启动Game这个Example中Battle进程下的BattleTaskDispatcher服务，则需要执行如下命令：  
+
+```
+# windows
+spark-server.exe SparkServer SparkServer.Game.Process.Battle.BattleTaskDispatcher ../../Game/Startconf/LocalSvr/Battle/BootConfig.json BattleTaskDispatcher 
+
+# linux
+mono spark-server.exe SparkServer SparkServer.Game.Process.Battle.BattleTaskDispatcher ../../Game/Startconf/LocalSvr/Battle/BootConfig.json BattleTaskDispatcher 
+```
+
+spark-server.exe是编译好的可执行文件，后面的SparkServer参数指明了，启动这个进程，需要指明初始化服务、启动配置和服务名称。SparkServer.Game.Process.Battle.BattleTaskDispatcher这个参数，指明了第一个被启动的服务是哪个，紧随其后的就是启动配置，最后是第一个被启动服务的名称。  
+

@@ -65,3 +65,23 @@ dos2unix *
 ```
 指令来将文件转成unix文件格式。如果你想清理skynet的编译文件，可以执行./build.sh clean指令进行清理。
 
+# 进程启动配置
+启动SparkServer节点，需要指定启动配置，而配置采用的是json格式。我们的SparkServer节点，主要包含如下字段：  
+
+* Gateway字段：启动Gateway服务的配置，负责客户端的连接和数据包的收发处理，包含几个重要的字段
+    * Host：包含服务器IP地址和端口信息的字符串，如"127.0.0.1:8888"
+    * Class：包含要启动类的命名空间和类名(SparkServer支持用户自定义Gateway类，因此使用者可以写自定义Gateway服务，但是要继承Framework.Service里的Gateway服务)。如要被创建的Gateway类实例的命名空间是"SparkServer.Test.Gateway"，类名是"GatewayCase"，那么这里则是填"SparkServer.Test.Gateway.GatewayCase"
+    * Name: 要被启动的Gateway服务的名称
+    * 下面是一个Gateway配置的例子，具体可以参考Test Case里的Gateway测试：
+    ```
+    {
+      "Gateway": {
+        "Host": "127.0.0.1:8888",
+        "Class": "SparkServer.Test.Gateway.GatewayCase",
+        "Name": "gateway"
+      },
+    }
+    ```
+* Logger字段：日志输出的路径，一般是exe所在的目录作为工作目录
+* ClusterConfig字段：用于指定集群配置的路径
+* ClusterName字段：用于指定被启动的进程，在集群中的进程名称，在跨进程的RPC调用中发挥关键作用

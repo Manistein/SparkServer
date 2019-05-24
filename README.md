@@ -306,3 +306,21 @@ protected void RemoteCall(string remoteNode, string service, string method, byte
 * cb:当被请求服务返回回应时，这个函数用于处理回应信息
 
 具体例子可以参见Game目录下的Example，TestSender进程内的服务，如何向Battle进程内的服务发起远程RPC请求，并处理回应的。
+
+# 设置定时器
+SparkServer的ServiceContext基类，提供了一个设置定时器的函数Timeout函数，我们来看一下它的定义：  
+
+```
+// @context:要保存的上下文环境变量，这些变量用于在定时器触发时使用
+// @timeout:多少秒后触发这个定时器
+// @callback:定时器回调函数
+protected void Timeout(SSContext context, long timeout, TimeoutCallback callback)
+```
+
+定时器回调函数，是当定时器触发时，要被调用的函数：  
+
+```
+delegate void TimeoutCallback(SSContext context, long currentTime);
+```
+
+我们只需要遵循这样的格式即可。具体的例子可以参考Game/Process/TestSender/Sender.cs，Sender这个服务的调用方式。

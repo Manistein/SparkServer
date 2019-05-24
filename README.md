@@ -63,7 +63,7 @@ msbuild SparkServer.sln
 ```
 dos2unix *
 ```
-指令来将文件转成unix文件格式。如果你想清理skynet的编译文件，可以执行./build.sh clean指令进行清理。
+指令来将文件转成unix文件格式。如果你想清理skynet的编译文件，可以执行./build.sh clean指令进行清理。如果你编译skynet仍然遇到困难，可以参照skynet官方的教程：[Build](https://github.com/cloudwu/skynet/wiki/Build)
 
 # 进程启动配置
 启动SparkServer节点，需要指定启动配置，而配置采用的是json格式。我们的SparkServer节点，主要包含如下字段：  
@@ -253,7 +253,7 @@ protected void Send(string destination, string method, byte[] param);
 
 // 向远程服务发出请求，并且需要回应
 protected void Call(int destination, string method, byte[] param, SSContext context, RPCCallback cb);
-protected void Call(string destination, string method, byte[] param, SSContext context, RPCCallback cb)
+protected void Call(string destination, string method, byte[] param, SSContext context, RPCCallback cb);
 ```
 
 不论是Send还是Call，他们都有两个版本，一个是指明被调用服务的地址，还有一个则是指定服务的名称，我们在调用SparkServerUtility.NewService时，有一个参数是传入服务名称，而这个服务名称就是服务的别名，在RPC请求的时候，如果一个服务有注册别名，那么Send和Call函数可以将这个别名作为第一个参数，将请求发给目标服务。具体的使用方式，可以参照Game/Process/Battle进程中，BattleTaskDispatcher服务如何向BattleTaskDispatcher服务转发消息的例子。
@@ -270,3 +270,39 @@ protected void DoResponse(int destination, string method, byte[] param, int sess
 ```
 
 为什么这里，请求者服务需要一个session？因为请求者可能要发出多个Call请求，而每次Call的时候又有自己独立的上下文环境，为了识别哪个返回对应哪个请求，我们需要为每个请求生成唯一的session id，在被请求方处理完请求时，需要将这个session带回，以方便请求者找回对应的上下文环境。具体的使用，可以参照Game/Process/Battle中，BattleTaskComsumer服务如何向BattleTaskDispatcher服务返回回应的例子。
+
+# 远程RPC调用
+上一节，我们说到了一个服务向另一个服务发起请求，不过是针对发起请求的服务和被要求请求的服务都在同一个进程的情况下做的，如果我们跨节点发起RPC请求，那么需要借助集群机制来实现。这里SparkServer提供了几个接口，以供我们进行远程RPC调用：  
+
+```
+protected void RemoteSend(string remoteNode, string service, string method, byte[] param);
+protected void RemoteCall(string remoteNode, string service, string method, byte[] param, SSContext context, RPCCallback cb);
+```
+
+我们要使用SparkServer节点进行组网，首先需要配置每个节点需要绑定的IP地址和端口，这些配置，我们将填在BootConfig.json中ClusterName字段所指向文件中，比如我们的集群配置文件为ClusterName.json，我们以Game目录下的Example为例，其配置为：  
+
+```
+{
+    "battlesvr" : "127.0.0.1:8888",
+    "battlecli" : "127.0.0.1:6666"
+}
+```
+在完成集群配置的编辑以后，我们需要在启动配置中，指定集群配置的路径和该进程的名称，这个名称用于指明进程将监听哪个IP的哪个端口。还是以Game的Example为例：  
+
+```
+{
+    "ClusterConfig" : "../../Game/Startconf/LocalSvr/ClusterName.json",
+    "ClusterName" : "battlesvr",
+    "Logger" : "../../Game/Logs/Server/"   
+}
+```
+这个配置指定了，要被启动的进程将监听"127.0.0.1:8888"这个地址。在了解集群配置的设定以后，我们就可以来解释RemoteSend和RemoteCall的参数：  
+
+* remoteNode:集群配置中的节点名称，不能填自己绑定的节点
+* service:目标服务名称，即对应SparkServerUtility.NewService里的serviceName参数
+* method:目标服务注册好的方法名
+* param:序列化好的参数
+* context:发起rpc调用，并要求回应的时候，需要保存的上下文环境变量，将被存储在这个结构内
+* cb:当被请求服务返回回应时，这个函数用于处理回应信息
+
+具体例子可以参见Game目录下的Example，TestSender进程内的服务，如何向Battle进程内的服务发起远程RPC请求，并处理回应的。

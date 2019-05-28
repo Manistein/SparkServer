@@ -37,11 +37,11 @@ namespace SparkServer.Framework.Service.Logger
             var fileTarget = new FileTarget("target")
             {
                 FileName = logRoot + "logs/${shortdate}/" + filePrefix + "${date:universalTime=false:format=yyyy_MM_dd_HH}.log",
-                Layout = "${longdate} ${message}"
+                Layout = "${longdate} ${message}",
+                KeepFileOpen = true,
+                AutoFlush = true,
             };
             config.AddTarget(fileTarget);
-
-            fileTarget.Layout = @"${longdate} ${message}";
 
             config.AddRuleForAllLevels(fileTarget);
 
@@ -55,7 +55,7 @@ namespace SparkServer.Framework.Service.Logger
             string outStr = string.Format("[{0:X8}] {1}", source, Encoding.ASCII.GetString(param));
             m_logger.Info(outStr);
 
-            // Console.WriteLine("{0} source serviceId:{1} info:{2}", DateTime.Now, msg.Source, Encoding.ASCII.GetString(msg.Data));
+            // Console.WriteLine("{0}", outStr);
         }
     }
 }

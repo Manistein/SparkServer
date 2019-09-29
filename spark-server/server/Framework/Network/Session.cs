@@ -12,6 +12,20 @@ using System.Net.Sockets;
 
 namespace SparkServer.Network
 {
+    public enum SessionSocketError
+    {
+        Disconnected = 90001,
+    }
+
+    public enum ConnectionStatus
+    {
+        Invalid,
+        Connecting,
+        Connected,
+        Disconnecting, // Half close
+        Disconnected,
+    }
+
     public enum SessionType
     {
         Client = 0,
@@ -48,7 +62,7 @@ namespace SparkServer.Network
         private ConnectCompleteHandle m_onConnectCompleteHandle; // only for client session
         private IPEndPoint m_remoteEndPoint;
         private string m_errorText = "";
-        private bool m_isConnected = false;
+        private ConnectionStatus m_connectionStatus = ConnectionStatus.Invalid;
 
         private void Init(Socket socket, int opaque, long sessionId, BufferPool bufferPool, SessionErrorHandle errorCallback, ReadCompleteHandle readCallback, UserToken userToken)
         {
@@ -83,7 +97,7 @@ namespace SparkServer.Network
         {
             Init(socket, opaque, sessionId, bufferPool, errorCallback, readCallback, userToken);
             m_type = SessionType.Server;
-            m_isConnected = true;
+            m_connectionStatus = ConnectionStatus.Connected;
             m_remoteEndPoint = remoteEndPoint;
 
             BeginRecv();
@@ -103,21 +117,37 @@ namespace SparkServer.Network
             m_type = SessionType.Client;
             m_remoteEndPoint = remoteEndPoint;
             m_onConnectCompleteHandle = connectCallback;
+            m_connectionStatus = ConnectionStatus.Connecting;
 
             m_errorText = remoteEndPoint.ToString();
 
             BeginConnect();
         }
 
-        public void Stop()
+        protected void Stop()
         {
+            m_connectionStatus = ConnectionStatus.Disconnected;
+            m_onSessionError(m_opaque, m_sessionId, (int)SessionSocketError.Disconnected, m_errorText); // remove session from tcp_container
+
             // m_socket.Shutdown(SocketShutdown.Both);
             m_socket.Close();
             m_writeEvent.Dispose();
             m_readEvent.Dispose();
             m_inboundPacketManager.Stop();
             m_outboundPacketManager.Stop();
-            m_isConnected = false;
+        }
+
+        public void Close()
+        {
+            if (m_outboundPacketManager.HeadBuffer == null)
+            {
+                Stop();
+            }
+            else
+            {
+                // if buffers do not complete write, then turn it to half close status
+                m_connectionStatus = ConnectionStatus.Disconnecting;
+            }
         }
 
         public SessionType GetSessionType()
@@ -132,7 +162,7 @@ namespace SparkServer.Network
 
         public bool Write(byte[] buffer)
         {
-            if (!m_isConnected)
+            if (m_connectionStatus != ConnectionStatus.Connected)
             {
                 return false;
             }
@@ -198,13 +228,18 @@ namespace SparkServer.Network
 
         private void OnConnectComplete(object o)
         {
+            if (m_connectionStatus != ConnectionStatus.Connecting)
+            {
+                return;
+            }
+
             SocketAsyncEventArgs args = o as SocketAsyncEventArgs;
             if (args.SocketError == SocketError.Success)
             {
                 m_writeEvent.RemoteEndPoint = null;
                 UserToken userToken = args.UserToken as UserToken;
                 m_onConnectCompleteHandle(m_opaque, m_sessionId, userToken.IP, userToken.Port);
-                m_isConnected = true;
+                m_connectionStatus = ConnectionStatus.Connected;
 
                 BeginRecv();
             }
@@ -216,13 +251,12 @@ namespace SparkServer.Network
 
         private void OnDisconnectComplete(object o)
         {
-            m_isConnected = false;
             m_onSessionError(m_opaque, m_sessionId, (int)SocketError.Disconnecting, m_errorText);
         }
 
         private void BeginRecv()
         {
-            if (!m_isConnected)
+            if (m_connectionStatus != ConnectionStatus.Connected)
             {
                 return;
             }
@@ -237,7 +271,7 @@ namespace SparkServer.Network
 
         private void OnRecvComplete(object o)
         {
-            if (!m_isConnected)
+            if (m_connectionStatus != ConnectionStatus.Connected)
             {
                 return;
             }
@@ -247,7 +281,6 @@ namespace SparkServer.Network
             {
                 if (args.BytesTransferred == 0)
                 {
-                    m_isConnected = false;
                     m_onSessionError(m_opaque, m_sessionId, (int)SocketError.Disconnecting, m_errorText);
                 }
                 else
@@ -259,7 +292,6 @@ namespace SparkServer.Network
             }
             else
             {
-                m_isConnected = false;
                 m_onSessionError(m_opaque, m_sessionId, (int)args.SocketError, m_errorText);
             }
         }
@@ -273,6 +305,11 @@ namespace SparkServer.Network
 
             if (m_outboundPacketManager.HeadBuffer == null)
             {
+                if (m_connectionStatus == ConnectionStatus.Disconnecting)
+                {
+                    Stop();
+                }
+
                 return;
             }
 
@@ -287,17 +324,11 @@ namespace SparkServer.Network
 
         private void OnWriteComplete(object o)
         {
-            if (!m_isConnected)
-            {
-                return;
-            }
-
             SocketAsyncEventArgs args = o as SocketAsyncEventArgs;
             if (args.SocketError == SocketError.Success)
             {
                 if (args.BytesTransferred == 0)
                 {
-                    m_isConnected = false;
                     m_onSessionError(m_opaque, m_sessionId, (int)SocketError.Disconnecting, m_errorText);
                 }
                 else
@@ -314,8 +345,14 @@ namespace SparkServer.Network
             }
             else
             {
-                m_isConnected = false;
-                m_onSessionError(m_opaque, m_sessionId, (int)args.SocketError, m_errorText);
+                if (m_connectionStatus == ConnectionStatus.Disconnecting)
+                {
+                    Stop();
+                }
+                else
+                {
+                    m_onSessionError(m_opaque, m_sessionId, (int)args.SocketError, m_errorText);
+                }
             }
         }
     }

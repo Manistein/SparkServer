@@ -72,9 +72,8 @@ namespace SparkServer.Network
 
             foreach(KeyValuePair<long, Session> iter in m_sessionDict)
             {
-                iter.Value.Stop();
+                iter.Value.Close();
             }
-            m_sessionDict.Clear();
         }
 
         public override void Disconnect(long sessionId)
@@ -82,8 +81,7 @@ namespace SparkServer.Network
             Session session = GetSessionBy(sessionId);
             if (session != null)
             {
-                session.Stop();
-                m_sessionDict.Remove(sessionId);
+                session.Close();
             }
         }
 
@@ -110,10 +108,15 @@ namespace SparkServer.Network
                 IPEndPoint ipEP = session.GetRemoteEndPoint();
                 ipEndPoint = ipEP.ToString();
 
-                session.Stop();
-                m_sessionDict.Remove(sessionId);
-
                 m_onErrorHandle(opaque, sessionId, ipEndPoint, errorCode, errorText);
+                if (errorCode == (int)SessionSocketError.Disconnected)
+                {
+                    m_sessionDict.Remove(sessionId); 
+                }
+                else
+                {
+                    session.Close();
+                }
             }
         }
 

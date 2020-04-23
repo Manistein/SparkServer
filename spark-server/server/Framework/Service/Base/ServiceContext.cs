@@ -9,6 +9,7 @@ using SparkServer.Framework.MessageQueue;
 using SparkServer.Framework.Utility;
 using NetSprotoType;
 using SparkServer.Framework.Timer;
+using Newtonsoft.Json.Linq;
 
 namespace SparkServer.Framework.Service
 {
@@ -83,6 +84,8 @@ namespace SparkServer.Framework.Service
         private Dictionary<int, RPCResponseContext> m_responseCallbacks = new Dictionary<int, RPCResponseContext>();
         private Dictionary<int, TimeoutContext> m_timeoutCallbacks = new Dictionary<int, TimeoutContext>();
 
+        private JObject m_bootConfig;
+
         public ServiceContext()
         {
             RegisterServiceMethods("Init", OnInit);
@@ -90,6 +93,9 @@ namespace SparkServer.Framework.Service
 
         protected void OnInit(int source, int session, string method, byte[] param)
         {
+            string bootConfigText = ConfigHelper.LoadFromFile(SparkServerUtility.GetBootConf());
+            m_bootConfig = JObject.Parse(bootConfigText);
+
             if (param != null)
                 Init(param);
             else

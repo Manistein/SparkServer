@@ -9,6 +9,21 @@ namespace SparkServer.Framework.Utility
 {
     class SparkServerUtility
     {
+        private static string m_bootConf = "";
+
+        public static void InitBootConf(string bootConf)
+        {
+            if (m_bootConf == "")
+            {
+                m_bootConf = bootConf;
+            }
+        }
+
+        public static string GetBootConf()
+        {
+            return m_bootConf;
+        }
+
         public static int NewService(string serviceClass)
         {
             return NewService(serviceClass, "", null);

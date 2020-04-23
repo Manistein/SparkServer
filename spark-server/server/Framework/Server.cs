@@ -44,6 +44,7 @@ namespace SparkServer.Framework
 
         public void Run(string bootConf, BootServices customBoot)
         {
+            SparkServerUtility.InitBootConf(bootConf);
             InitConfig(bootConf);
             Boot(customBoot);
             Loop();

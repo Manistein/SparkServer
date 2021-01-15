@@ -1,7 +1,7 @@
 # Overview
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SparkServer是一个基于Actor模型的服务端框架，使用了微软的.Net Framework。SparkServer最初的目标，是服务端能够和Unity客户端共享一些逻辑代码，进而节约开发成本，同时能够无缝整合到[skynet](https://github.com/cloudwu/skynet)的集群机制中。SparkServer深度参照了skynet的设计，如果你熟悉skynet，那么同样可以很快理解SparkServer的设计机制。目前为止，SparkServer已经可以做到和skynet节点联合组网，SparkServer采用了skynet的集群机制的设计和实现，只需要遵循skynet cluster机制的使用方式，即可向SparkServer节点发起RPC请求。同时我们也可以很方便地从SparKServer节点向skynet节点发起RPC请求。SparkServer不仅可以无缝整合到skynet的cluster机制中，也可以独自组网，构建只有SparkServer节点的集群。  
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SparkServer可以在Windows上运行，同时也可以借助Mono在Linux平台上运行。如果你有兴趣进一步了解SparkServer的设计背景，和一些内部设计机制，可以参考这篇文章[C#服务端框架设计与实现](https://manistein.github.io/blog/post/server/csharp/csharp%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SparkServer可以在Windows上运行，同时也可以借助Mono在Linux平台上运行。如果你有兴趣进一步了解SparkServer的设计背景，和一些内部设计机制，可以参考这篇文章[C#服务端框架设计与实现](http://manistein.club/post/server/csharp/csharp%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/)
 
 # 运行的目标环境
 * Linux

@@ -12,6 +12,7 @@
 #### Windows平台
 * Visual Studio 2017或以上版本
 #### Linux平台
+* 首先在对应的平台，先安装msbuild(重要，一定要先安装msbuild，否则编译会出现问题，得卸载下一个步骤里所有的安装包后，再重新安装)
 * [安装Mono开发运行环境(version 5.18.1.0或以上)](https://www.mono-project.com/download/stable/#download-lin)
 * 安装dos2unix工具
 

@@ -325,3 +325,8 @@ delegate void TimeoutCallback(SSContext context, long currentTime);
 ```
 
 我们只需要遵循这样的格式即可。具体的例子可以参考Game/Process/TestSender/Sender.cs，Sender这个服务的调用方式。
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Manistein/SparkServer&type=Date)](https://star-history.com/#Manistein/SparkServer&Date)
+
